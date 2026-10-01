@@ -95,6 +95,39 @@
   .small { font-size:12px; color:var(--muted); margin-top:20px; text-align:center; line-height:1.5; }
   .small a { color:var(--brand); }
 
+  input[type=datetime-local], input[type=url], select, textarea { width:100%; padding:14px; font-size:17px; font-family:inherit; border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--text); }
+  textarea { min-height:84px; resize:vertical; }
+  select:focus, textarea:focus, input[type=datetime-local]:focus, input[type=url]:focus { outline:none; border-color:var(--brand); }
+
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; background:var(--tint); padding:5px; border-radius:14px; margin:0 0 16px; }
+  .tab { min-height:44px; font-size:15px; font-weight:700; color:var(--muted); background:transparent; border:0; border-radius:10px; cursor:pointer; }
+  .tab.sel { background:#fff; color:var(--brand-dark); box-shadow:0 1px 4px rgba(91,61,245,.18); }
+  .panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 10px; text-align:left; }
+  .panel-head h2 { margin:0; font-size:22px; }
+  .pill { padding:10px 16px; min-height:44px; font-size:15px; font-weight:700; color:#fff; background:var(--brand); border:0; border-radius:99px; cursor:pointer; }
+  .pill:disabled { opacity:.5; }
+  .filters { display:flex; gap:8px; overflow-x:auto; padding:2px 2px 10px; margin:0 -2px; }
+  .filters .chip { flex:none; min-height:40px; padding:8px 12px; font-size:14px; }
+  .ev { text-align:left; border:1.5px solid var(--line); border-radius:16px; padding:14px; margin:0 0 12px; background:#fff; }
+  .ev img { width:100%; max-height:200px; object-fit:cover; border-radius:12px; display:block; margin:0 0 10px; }
+  .ev .cat { font-size:12px; font-weight:700; color:var(--brand-dark); background:var(--tint); display:inline-block; padding:3px 10px; border-radius:99px; }
+  .ev h3 { margin:8px 0 4px; font-size:18px; line-height:1.25; }
+  .ev .meta { font-size:14px; color:var(--muted); line-height:1.5; }
+  .ev .price { font-weight:700; color:var(--pop); }
+  .ev .desc { font-size:15px; line-height:1.45; margin:8px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .ev .foot { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px; font-size:13px; color:var(--muted); }
+  .ev .links { display:flex; gap:8px; margin-top:10px; }
+  .ev a.go { display:inline-block; padding:10px 14px; font-size:15px; font-weight:700; color:var(--brand); background:var(--tint); border-radius:10px; text-decoration:none; }
+  .linkbtn { font-size:13px; font-weight:600; color:var(--muted); background:none; border:0; padding:10px 6px; min-height:44px; cursor:pointer; text-decoration:underline; }
+  .notice { text-align:left; font-size:13px; line-height:1.45; color:#7a4a00; background:#fff4e0; border-radius:12px; padding:10px 12px; margin:10px 0; }
+  .empty { text-align:center; color:var(--muted); padding:24px 8px; line-height:1.5; }
+  .gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+  .tile { position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:var(--tint); }
+  .tile img { width:100%; height:100%; object-fit:cover; display:block; }
+  .tile button { position:absolute; top:4px; right:4px; width:32px; height:32px; font-size:16px; line-height:1; color:#fff; background:rgba(29,27,46,.7); border:0; border-radius:50%; cursor:pointer; }
+  .evphoto { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .evphoto span { font-size:14px; color:var(--muted); }
+
   @media (prefers-reduced-motion: reduce) {
     .step.in-right, .step.in-left, .step.active .emoji { animation:none; }
     #bar { transition:none; }
@@ -307,12 +340,72 @@
 
   <!-- Shown once signed in with a finished profile -->
   <div id="welcome" class="welcome hidden">
-    <div class="avatar" id="welcomeAvatar" aria-hidden="true">🎉</div>
-    <h2 id="welcomeTitle">Welcome!</h2>
-    <p id="welcomeText">You're in. Matching with other students is coming soon.</p>
-    <div id="summary" class="summary hidden"></div>
-    <button id="editBtn" class="main" type="button" style="width:100%">Edit my profile ✏️</button>
-    <button id="signOutBtn" class="ghost" type="button">Sign out</button>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
+      <button type="button" class="tab sel" role="tab" data-tab="Home" aria-selected="true">🏠 Home</button>
+      <button type="button" class="tab" role="tab" data-tab="Events" aria-selected="false">🎟️ Events</button>
+      <button type="button" class="tab" role="tab" data-tab="Gallery" aria-selected="false">🖼️ Gallery</button>
+    </nav>
+
+    <div id="tabHome" class="panel">
+      <div class="avatar" id="welcomeAvatar" aria-hidden="true">🎉</div>
+      <h2 id="welcomeTitle">Welcome!</h2>
+      <p id="welcomeText">You're in. Matching with other students is coming soon.</p>
+      <div id="summary" class="summary hidden"></div>
+      <button id="editBtn" class="main" type="button" style="width:100%">Edit my profile ✏️</button>
+      <button id="signOutBtn" class="ghost" type="button">Sign out</button>
+    </div>
+
+    <div id="tabEvents" class="panel hidden">
+      <div id="eventListView">
+        <div class="panel-head"><h2>Events &amp; deals</h2><button type="button" class="pill" id="evPostBtn">＋ Post</button></div>
+        <div class="filters" id="evFilters" role="group" aria-label="Filter by type"></div>
+        <div id="eventList" aria-live="polite"></div>
+        <div id="evListMsg" class="msg" role="status"></div>
+        <p class="small" style="margin-top:8px">Posted by students, not checked by MeetEm'. Meet in public places and never send money to someone you haven't met. Tap Report on anything that looks off.</p>
+      </div>
+
+      <div id="eventFormView" class="hidden" style="text-align:left">
+        <div class="panel-head"><h2>Post something fun</h2></div>
+        <label for="evTitle">Title</label>
+        <input id="evTitle" type="text" maxlength="80" autocomplete="off" placeholder="Discount movie tickets, game night...">
+        <label for="evCat">Type</label>
+        <select id="evCat"></select>
+        <label for="evWhen">When</label>
+        <input id="evWhen" type="datetime-local">
+        <label for="evWhere">Where</label>
+        <input id="evWhere" type="text" maxlength="80" autocomplete="off" placeholder="Student center, Main St Cinema...">
+        <label for="evPrice">Price (optional)</label>
+        <input id="evPrice" type="text" maxlength="30" autocomplete="off" placeholder="Free, or $12 (reg. $20)">
+        <label for="evDesc">Details (optional)</label>
+        <textarea id="evDesc" maxlength="300" placeholder="What is it, who's it for, how do people join?"></textarea>
+        <label for="evLink">Link (optional)</label>
+        <input id="evLink" type="url" inputmode="url" autocapitalize="none" maxlength="300" placeholder="https://...">
+        <label>Photo (optional)</label>
+        <div class="evphoto">
+          <button type="button" class="back" id="evPhotoBtn">Add photo 📷</button>
+          <span id="evPhotoName"></span>
+        </div>
+        <input id="evPhotoInput" type="file" accept="image/*" class="hidden" aria-label="Choose an event photo">
+        <div id="evTicketNote" class="hidden">
+          <div class="notice">🎟️ Tickets and deals: only post what's real and what you can back up. Link to the official seller when you can. No payments through MeetEm', and no reselling above face value.</div>
+          <div class="check"><input id="evAgree" type="checkbox"><label for="evAgree">I'll follow these rules</label></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="back" id="evCancel">Cancel</button>
+          <button type="button" class="main" id="evSubmit">Post it 🎉</button>
+        </div>
+        <div id="evFormMsg" class="msg" role="status"></div>
+      </div>
+    </div>
+
+    <div id="tabGallery" class="panel hidden" style="text-align:left">
+      <div class="panel-head"><h2>My gallery</h2><span id="galleryCount" class="small" style="margin:0"></span></div>
+      <p class="sub">Add up to 6 more photos of you, your art, your pets, or your favorite spots. Only you can see these for now.</p>
+      <div class="gallery" id="galleryGrid"></div>
+      <button type="button" class="main" id="galleryAdd" style="width:100%">Add photos 📷</button>
+      <input id="galleryInput" type="file" accept="image/*" multiple class="hidden" aria-label="Choose gallery photos">
+      <div id="galleryMsg" class="msg" role="status"></div>
+    </div>
   </div>
 
   <p class="small">Matched students see your first name, last initial, photo, year, major and interests. Never your email.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
@@ -515,13 +608,13 @@
     if (url) { const i = document.createElement("img"); i.src = url; i.alt = ""; el.appendChild(i); }
     else el.textContent = fallback;
   }
-  async function processPhoto(file) {
+  async function processPhoto(file, size = 512) {
     const url = URL.createObjectURL(file);
     try {
       const img = new Image(); img.src = url; await img.decode();
       const s = Math.min(img.naturalWidth, img.naturalHeight);
-      const c = document.createElement("canvas"); c.width = c.height = 512;
-      c.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, 512, 512);   // square crop; re-encoding also strips location data
+      const c = document.createElement("canvas"); c.width = c.height = size;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);   // square crop; re-encoding also strips location data
       return await new Promise((res) => c.toBlob(res, "image/jpeg", 0.85));
     } finally { URL.revokeObjectURL(url); }
   }
@@ -663,8 +756,8 @@
       };
       const { error } = await db.from("profiles").upsert(row);
       if (error) { console.error(error); return setMsg("Couldn't save your profile: " + error.message, "err"); }
-      currentProfile = row;
-      showWelcome(row);
+      currentProfile = Object.assign({}, currentProfile, row);
+      showWelcome(currentProfile);
     } finally { $("nextBtn").disabled = false; }
   }
 
@@ -693,6 +786,7 @@
     $("authForm").classList.add("hidden");
     $("switchRow").classList.add("hidden");
     $("welcome").classList.remove("hidden");
+    selectTab("Home");
     if (profile && profile.photo_path) { const url = await signedPhoto(profile.photo_path); if (url) showAvatar($("welcomeAvatar"), url, "🎉"); }
   }
 
@@ -716,6 +810,214 @@
 
   $("editBtn").addEventListener("click", startProfile);
   $("signOutBtn").addEventListener("click", async () => { await db.auth.signOut(); showForm(); });
+
+  /* ---------- tabs ---------- */
+  function selectTab(name) {
+    document.querySelectorAll("#tabs .tab").forEach((t) => { const on = t.dataset.tab === name; t.classList.toggle("sel", on); t.setAttribute("aria-selected", String(on)); });
+    document.querySelectorAll("#welcome .panel").forEach((p) => p.classList.toggle("hidden", p.id !== "tab" + name));
+    if (name === "Events") { showEventList(); loadEvents(); }
+    if (name === "Gallery") renderGallery();
+  }
+  document.querySelectorAll("#tabs .tab").forEach((t) => t.addEventListener("click", () => selectTab(t.dataset.tab)));
+
+  /* ---------- events & deals ---------- */
+  const EVENT_CATS = [["🎉", "Campus events"], ["🎟️", "Tickets & deals"], ["🍕", "Food"], ["🌳", "Outdoors"], ["📚", "Study"], ["🎮", "Just for fun"]];
+  const TICKET_CAT = "Tickets & deals";
+  let eventFilter = "All";
+  let evPhotoBlob = null;
+  let evLoadId = 0;
+  const setEvMsg = (id, text, type) => { const m = $(id); m.textContent = text || ""; m.className = "msg " + (type || ""); };
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const catEmoji = (c) => (EVENT_CATS.find((x) => x[1] === c) || ["✨"])[0];
+
+  function buildEventControls() {
+    const f = $("evFilters"); f.replaceChildren();
+    [["", "All"]].concat(EVENT_CATS).forEach(([e, label]) => {
+      const b = el("button", "chip" + (label === eventFilter ? " sel" : ""), (e ? e + " " : "") + label);
+      b.type = "button"; b.setAttribute("aria-pressed", String(label === eventFilter));
+      b.addEventListener("click", () => { eventFilter = label; buildEventControls(); loadEvents(); });
+      f.appendChild(b);
+    });
+    const sel = $("evCat"); sel.replaceChildren();
+    EVENT_CATS.forEach(([e, label]) => { const o = el("option", "", e + " " + label); o.value = label; sel.appendChild(o); });
+  }
+
+  function showEventList() { $("eventFormView").classList.add("hidden"); $("eventListView").classList.remove("hidden"); }
+  function showEventForm() {
+    ["evTitle", "evWhere", "evPrice", "evDesc", "evLink", "evWhen"].forEach((i) => { $(i).value = ""; });
+    $("evAgree").checked = false; evPhotoBlob = null; $("evPhotoName").textContent = "";
+    $("evCat").value = EVENT_CATS[0][1]; $("evTicketNote").classList.add("hidden");
+    setEvMsg("evFormMsg", "");
+    $("eventListView").classList.add("hidden"); $("eventFormView").classList.remove("hidden");
+    $("evTitle").focus();
+  }
+  $("evPostBtn").addEventListener("click", showEventForm);
+  $("evCancel").addEventListener("click", showEventList);
+  $("evCat").addEventListener("change", () => $("evTicketNote").classList.toggle("hidden", $("evCat").value !== TICKET_CAT));
+  $("evPhotoBtn").addEventListener("click", () => $("evPhotoInput").click());
+  $("evPhotoInput").addEventListener("change", async () => {
+    const file = $("evPhotoInput").files[0]; if (!file) return;
+    if (!file.type.startsWith("image/")) return setEvMsg("evFormMsg", "Please choose an image.", "err");
+    try { evPhotoBlob = await processPhoto(file, 900); $("evPhotoName").textContent = "Photo added ✅"; setEvMsg("evFormMsg", ""); }
+    catch (e) { setEvMsg("evFormMsg", "Sorry, that photo didn't load.", "err"); }
+    $("evPhotoInput").value = "";
+  });
+
+  function safeLink(raw) {
+    try { const u = new URL(raw); return u.protocol === "https:" ? u : null; } catch (e) { return null; }
+  }
+
+  async function submitEvent() {
+    const title = $("evTitle").value.trim(), cat = $("evCat").value, when = $("evWhen").value;
+    const where = $("evWhere").value.trim(), price = $("evPrice").value.trim(), desc = $("evDesc").value.trim(), linkRaw = $("evLink").value.trim();
+    if (title.length < 3) return setEvMsg("evFormMsg", "Add a title (at least 3 characters).", "err");
+    if (!when) return setEvMsg("evFormMsg", "Pick a date and time.", "err");
+    const whenDate = new Date(when);
+    if (isNaN(whenDate) || whenDate.getTime() < Date.now() - 60000) return setEvMsg("evFormMsg", "Please pick a time in the future.", "err");
+    let link = null;
+    if (linkRaw) { const u = safeLink(linkRaw); if (!u) return setEvMsg("evFormMsg", "The link needs to start with https://", "err"); link = u.href; }
+    if (cat === TICKET_CAT && !$("evAgree").checked) return setEvMsg("evFormMsg", "Please agree to the ticket rules.", "err");
+    $("evSubmit").disabled = true; setEvMsg("evFormMsg", "Posting…", "ok");
+    try {
+      const uid = currentUser.id;
+      let photo_path = null;
+      if (evPhotoBlob) {
+        const path = uid + "/ev-" + Date.now() + ".jpg";
+        const up = await db.storage.from("event-photos").upload(path, evPhotoBlob, { contentType: "image/jpeg" });
+        if (up.error) { console.error(up.error); setEvMsg("evFormMsg", "Your photo didn't upload, so it was skipped.", "err"); } else photo_path = path;
+      }
+      const meta = currentUser.user_metadata || {};
+      const first = (currentProfile && currentProfile.first_name) || meta.first_name || "A student";
+      const li = currentProfile && currentProfile.last_initial ? " " + currentProfile.last_initial + "." : "";
+      const row = { user_id: uid, poster_name: first + li, title, category: cat, starts_at: whenDate.toISOString(), location: where || null, price_text: price || null, description: desc || null, link_url: link, photo_path };
+      const { error } = await db.from("events").insert(row);
+      if (error) {
+        console.error(error);
+        if (photo_path) db.storage.from("event-photos").remove([photo_path]);
+        return setEvMsg("evFormMsg", /row-level security|policy/i.test(error.message) ? "You can post up to 5 times a day. Try again tomorrow." : "Couldn't post: " + error.message, "err");
+      }
+      showEventList(); loadEvents(); setEvMsg("evListMsg", "Posted! 🎉", "ok");
+    } finally { $("evSubmit").disabled = false; }
+  }
+  $("evSubmit").addEventListener("click", submitEvent);
+
+  function eventCard(e, photoUrl) {
+    const card = el("article", "ev");
+    if (photoUrl) { const i = document.createElement("img"); i.src = photoUrl; i.alt = ""; card.appendChild(i); }
+    card.appendChild(el("span", "cat", catEmoji(e.category) + " " + e.category));
+    card.appendChild(el("h3", "", e.title));
+    const meta = el("div", "meta");
+    const when = new Date(e.starts_at).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+    meta.appendChild(el("div", "", "🗓️ " + when));
+    if (e.location) meta.appendChild(el("div", "", "📍 " + e.location));
+    if (e.price_text) meta.appendChild(el("div", "price", "💸 " + e.price_text));
+    card.appendChild(meta);
+    if (e.description) card.appendChild(el("p", "desc", e.description));
+    const u = e.link_url && safeLink(e.link_url);
+    if (u) {
+      const links = el("div", "links"); const a = el("a", "go", "Open link ↗");
+      a.href = u.href; a.target = "_blank"; a.rel = "noopener noreferrer"; links.appendChild(a); card.appendChild(links);
+    }
+    const foot = el("div", "foot"); foot.appendChild(el("span", "", "Posted by " + (e.poster_name || "a student")));
+    const mine = currentUser && e.user_id === currentUser.id;
+    const act = el("button", "linkbtn", mine ? "Delete" : "Report"); act.type = "button";
+    act.addEventListener("click", async () => {
+      if (mine) {
+        if (!confirm("Delete this post?")) return;
+        const { error } = await db.from("events").delete().eq("id", e.id);
+        if (error) return setEvMsg("evListMsg", "Couldn't delete: " + error.message, "err");
+        if (e.photo_path) db.storage.from("event-photos").remove([e.photo_path]);
+        loadEvents();
+      } else {
+        if (!confirm("Report this post as a scam, spam, or not okay?")) return;
+        const { error } = await db.from("event_reports").insert({ event_id: e.id, reporter_id: currentUser.id, reason: "reported" });
+        if (error && error.code !== "23505") return setEvMsg("evListMsg", "Couldn't send the report. Try again.", "err");
+        act.textContent = "Reported ✓"; act.disabled = true;
+        setEvMsg("evListMsg", "Thanks for the report. We'll look at it.", "ok");
+      }
+    });
+    foot.appendChild(act); card.appendChild(foot);
+    return card;
+  }
+
+  async function loadEvents() {
+    const id = ++evLoadId, list = $("eventList");
+    list.replaceChildren(el("div", "empty", "Loading…"));
+    const since = new Date(Date.now() - 3 * 3600e3).toISOString();
+    let q = db.from("events").select("*").gte("starts_at", since).order("starts_at", { ascending: true }).limit(50);
+    if (eventFilter !== "All") q = q.eq("category", eventFilter);
+    const { data, error } = await q;
+    if (id !== evLoadId) return;
+    if (error) { console.error(error); list.replaceChildren(el("div", "empty", "Events aren't switched on yet. The site owner needs to finish the events setup in Supabase.")); return; }
+    if (!data.length) { list.replaceChildren(el("div", "empty", "Nothing here yet. Be the first to post something fun! 🎉")); return; }
+    const urls = {};
+    const paths = data.map((e) => e.photo_path).filter(Boolean);
+    if (paths.length) {
+      try { const r = await db.storage.from("event-photos").createSignedUrls(paths, 3600); (r.data || []).forEach((x) => { if (x.signedUrl) urls[x.path] = x.signedUrl; }); } catch (err) { /* photos are optional */ }
+    }
+    if (id !== evLoadId) return;
+    list.replaceChildren(...data.map((e) => eventCard(e, urls[e.photo_path])));
+  }
+
+  /* ---------- gallery ---------- */
+  const MAX_GALLERY = 6;
+  const galleryPaths = () => (currentProfile && currentProfile.gallery_paths) || [];
+  async function saveGallery(paths) {
+    const { error } = await db.from("profiles").update({ gallery_paths: paths }).eq("id", currentUser.id);
+    if (error) return error;
+    currentProfile = Object.assign({}, currentProfile, { gallery_paths: paths });
+    return null;
+  }
+  async function renderGallery() {
+    const grid = $("galleryGrid"); grid.replaceChildren();
+    const paths = galleryPaths();
+    $("galleryCount").textContent = paths.length + " of " + MAX_GALLERY;
+    $("galleryAdd").disabled = !currentProfile || !currentProfile.major || paths.length >= MAX_GALLERY;
+    if (!currentProfile || !currentProfile.major) { setEvMsg("galleryMsg", "Finish your profile first, then you can add photos.", "err"); return; }
+    setEvMsg("galleryMsg", "");
+    if (!paths.length) return;
+    const urls = {};
+    try { const r = await db.storage.from("avatars").createSignedUrls(paths, 3600); (r.data || []).forEach((x) => { if (x.signedUrl) urls[x.path] = x.signedUrl; }); } catch (e) { /* show empty tiles */ }
+    paths.forEach((p) => {
+      const t = el("div", "tile");
+      if (urls[p]) { const i = document.createElement("img"); i.src = urls[p]; i.alt = "Gallery photo"; t.appendChild(i); }
+      const x = el("button", "", "✕"); x.type = "button"; x.setAttribute("aria-label", "Remove this photo");
+      x.addEventListener("click", async () => {
+        if (!confirm("Remove this photo?")) return;
+        const err = await saveGallery(galleryPaths().filter((q) => q !== p));
+        if (err) return setEvMsg("galleryMsg", "Couldn't remove it: " + err.message, "err");
+        db.storage.from("avatars").remove([p]);
+        renderGallery();
+      });
+      t.appendChild(x); grid.appendChild(t);
+    });
+  }
+  $("galleryAdd").addEventListener("click", () => $("galleryInput").click());
+  $("galleryInput").addEventListener("change", async () => {
+    const files = [...$("galleryInput").files].filter((f) => f.type.startsWith("image/"));
+    $("galleryInput").value = "";
+    if (!files.length) return;
+    const room = MAX_GALLERY - galleryPaths().length;
+    const chosen = files.slice(0, room);
+    $("galleryAdd").disabled = true; setEvMsg("galleryMsg", "Uploading…", "ok");
+    const added = [];
+    try {
+      for (let i = 0; i < chosen.length; i++) {
+        const blob = await processPhoto(chosen[i], 800);
+        const path = currentUser.id + "/gallery/" + Date.now() + "-" + i + ".jpg";
+        const up = await db.storage.from("avatars").upload(path, blob, { contentType: "image/jpeg" });
+        if (up.error) { console.error(up.error); continue; }
+        added.push(path);
+      }
+      if (!added.length) return setEvMsg("galleryMsg", "Those photos didn't upload. Try again.", "err");
+      const err = await saveGallery(galleryPaths().concat(added));
+      if (err) { db.storage.from("avatars").remove(added); return setEvMsg("galleryMsg", "Gallery isn't switched on yet. The site owner needs to finish the Supabase setup.", "err"); }
+      setEvMsg("galleryMsg", files.length > room ? "Added. The gallery holds " + MAX_GALLERY + " photos, so the rest were skipped." : "Added! 🎉", "ok");
+    } catch (e) { setEvMsg("galleryMsg", "Sorry, one of those photos didn't load.", "err"); }
+    finally { await renderGallery(); }
+  });
+
+  buildEventControls();
 
   buildChips(); buildTimes(); bindToggle();
   render("name", 0);
