@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MeetEm'">
+<meta name="theme-color" content="#5b3df5">
+<title>MeetEm' - College Meet Up</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root { --brand:#5b3df5; --brand-dark:#4429d4; --bg:#f6f4ff; --text:#1d1b2e; --muted:#6b6880; --err:#c62828; --ok:#1b7f3b; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .card { width:100%; max-width:420px; background:#fff; border-radius:20px; padding:28px 24px; box-shadow:0 8px 30px rgba(91,61,245,.12); }
+  h1 { margin:0; font-size:30px; color:var(--brand); letter-spacing:-.5px; }
+  .tag { margin:4px 0 22px; color:var(--muted); font-size:15px; }
+  label { display:block; font-size:14px; font-weight:600; margin:14px 0 6px; }
+  input, select { width:100%; padding:13px 14px; font-size:16px; border:1.5px solid #dcd8ee; border-radius:12px; background:#fff; color:var(--text); }
+  input:focus, select:focus { outline:none; border-color:var(--brand); }
+  .hint { font-size:12px; color:var(--muted); margin-top:4px; }
+  .check { display:flex; gap:10px; align-items:flex-start; margin-top:16px; font-size:14px; }
+  .check input { width:20px; height:20px; margin-top:2px; flex:none; }
+  button.main { width:100%; margin-top:22px; padding:14px; font-size:17px; font-weight:700; color:#fff; background:var(--brand); border:0; border-radius:12px; cursor:pointer; }
+  button.main:active { background:var(--brand-dark); }
+  button.main:disabled { opacity:.6; }
+  .msg { margin-top:14px; font-size:14px; min-height:20px; }
+  .msg.err { color:var(--err); } .msg.ok { color:var(--ok); }
+  .switch { text-align:center; margin-top:18px; font-size:14px; color:var(--muted); }
+  .switch a { color:var(--brand); font-weight:600; text-decoration:none; cursor:pointer; }
+  .hidden { display:none; }
+  .welcome h2 { margin:0 0 8px; }
+  .welcome p { color:var(--muted); line-height:1.5; }
+  .small { font-size:12px; color:var(--muted); margin-top:20px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>MeetEm'</h1>
+  <p class="tag">College Meet Up</p>
+
+  <!-- Sign up / sign in form -->
+  <form id="authForm" novalidate>
+    <div id="signupFields">
+      <label for="name">First name</label>
+      <input id="name" type="text" autocomplete="given-name" placeholder="Anya">
+
+      <label for="year">Year</label>
+      <select id="year">
+        <option value="">Choose one</option>
+        <option>Freshman</option>
+        <option>Sophomore</option>
+        <option>Transfer</option>
+        <option>Junior or senior</option>
+        <option>Other</option>
+      </select>
+
+      <label for="commute">Commute or live on campus?</label>
+      <select id="commute">
+        <option value="">Choose one</option>
+        <option>I commute</option>
+        <option>I live on campus</option>
+      </select>
+    </div>
+
+    <label for="email">School email (.edu)</label>
+    <input id="email" type="email" autocomplete="email" placeholder="you@school.edu" inputmode="email">
+
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="At least 8 characters">
+
+    <div id="ageRow" class="check">
+      <input id="age" type="checkbox">
+      <label for="age" style="margin:0;font-weight:400">I'm 18 or older</label>
+    </div>
+
+    <button id="submitBtn" class="main" type="submit">Create account</button>
+    <div id="msg" class="msg" role="status"></div>
+  </form>
+
+  <p id="switchRow" class="switch">Already have an account? <a id="toggle">Sign in</a></p>
+
+  <!-- Shown after sign in -->
+  <div id="welcome" class="welcome hidden">
+    <h2 id="welcomeTitle">Welcome!</h2>
+    <p>You're in. Next we'll add class times and small-group meetups. For now, you're on the list.</p>
+    <button id="signOutBtn" class="main" type="button">Sign out</button>
+  </div>
+
+  <p class="small">Only first name, year and major are shown to other students.</p>
+</div>
+
+<script>
+  // Your Supabase project (these two values are safe to be public)
+  const SUPABASE_URL = "https://mgthlvqokabxaolpwids.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ndGhsdnFva2FieGFvbHB3aWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NDgyMTgsImV4cCI6MjEwNjQyNDIxOH0.blqetmvMPewQHxuwg4f8goFNBN4kL8ZZaA0YWylsWAE";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const $ = (id) => document.getElementById(id);
+  let mode = "signup";
+
+  function setMsg(text, type) { const m = $("msg"); m.textContent = text || ""; m.className = "msg " + (type || ""); }
+
+  function setMode(next) {
+    mode = next;
+    const signup = mode === "signup";
+    $("signupFields").classList.toggle("hidden", !signup);
+    $("ageRow").classList.toggle("hidden", !signup);
+    $("submitBtn").textContent = signup ? "Create account" : "Sign in";
+    $("switchRow").innerHTML = signup
+      ? 'Already have an account? <a id="toggle">Sign in</a>'
+      : 'New here? <a id="toggle">Create account</a>';
+    $("toggle").onclick = () => setMode(signup ? "signin" : "signup");
+    $("password").autocomplete = signup ? "new-password" : "current-password";
+    setMsg("");
+  }
+
+  function showWelcome(user) {
+    const name = (user.user_metadata && user.user_metadata.first_name) || "there";
+    $("welcomeTitle").textContent = "Welcome, " + name + "!";
+    $("authForm").classList.add("hidden");
+    $("switchRow").classList.add("hidden");
+    $("welcome").classList.remove("hidden");
+  }
+
+  function showForm() {
+    $("welcome").classList.add("hidden");
+    $("authForm").classList.remove("hidden");
+    $("switchRow").classList.remove("hidden");
+    setMode("signin");
+  }
+
+  $("authForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setMsg("");
+    const email = $("email").value.trim().toLowerCase();
+    const password = $("password").value;
+
+    if (!/^[^@\s]+@[^@\s]+\.edu$/.test(email)) return setMsg("Please use your school email ending in .edu.", "err");
+    if (password.length < 8) return setMsg("Password must be at least 8 characters.", "err");
+
+    $("submitBtn").disabled = true;
+    try {
+      if (mode === "signup") {
+        const first_name = $("name").value.trim();
+        if (!first_name) return setMsg("Please enter your first name.", "err");
+        if (!$("year").value || !$("commute").value) return setMsg("Please choose your year and commute option.", "err");
+        if (!$("age").checked) return setMsg("You must be 18 or older to join.", "err");
+
+        const { data, error } = await db.auth.signUp({
+          email, password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { first_name, year: $("year").value, commute: $("commute").value }
+          }
+        });
+        if (error) return setMsg(error.message, "err");
+        if (data.session) { showWelcome(data.user); }
+        else { setMsg("Check your school email and tap the confirmation link, then come back and sign in.", "ok"); }
+      } else {
+        const { data, error } = await db.auth.signInWithPassword({ email, password });
+        if (error) return setMsg(error.message, "err");
+        showWelcome(data.user);
+      }
+    } finally {
+      $("submitBtn").disabled = false;
+    }
+  });
+
+  $("signOutBtn").addEventListener("click", async () => { await db.auth.signOut(); showForm(); });
+
+  // Keep people signed in between visits
+  db.auth.getSession().then(({ data }) => { if (data.session) showWelcome(data.session.user); });
+  setMode("signup");
+</script>
+</body>
+</html>
