@@ -11,31 +11,69 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root { --brand:#5b3df5; --brand-dark:#4429d4; --bg:#f6f4ff; --text:#1d1b2e; --muted:#6b6880; --err:#c62828; --ok:#1b7f3b; }
+  :root { --brand:#5b3df5; --brand-dark:#4429d4; --pop:#ff6b57; --bg:#f6f4ff; --text:#1d1b2e; --muted:#6b6880; --err:#c62828; --ok:#1b7f3b; --line:#dcd8ee; --tint:#efebff; }
   * { box-sizing:border-box; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
   .card { width:100%; max-width:420px; background:#fff; border-radius:20px; padding:28px 24px; box-shadow:0 8px 30px rgba(91,61,245,.12); }
   .brand { display:flex; align-items:center; gap:10px; }
   h1 { margin:0; font-size:32px; color:var(--brand); letter-spacing:-.5px; line-height:1; }
-  h1 .ap { color:#ff6b57; }
-  .tag { margin:4px 0 22px; color:var(--muted); font-size:15px; }
-  label { display:block; font-size:14px; font-weight:600; margin:14px 0 6px; }
-  input, select { width:100%; padding:13px 14px; font-size:16px; border:1.5px solid #dcd8ee; border-radius:12px; background:#fff; color:var(--text); }
-  input:focus, select:focus { outline:none; border-color:var(--brand); }
-  .hint { font-size:12px; color:var(--muted); margin-top:4px; }
-  .check { display:flex; gap:10px; align-items:flex-start; margin-top:16px; font-size:14px; }
-  .check input { width:20px; height:20px; margin-top:2px; flex:none; }
-  button.main { width:100%; margin-top:22px; padding:14px; font-size:17px; font-weight:700; color:#fff; background:var(--brand); border:0; border-radius:12px; cursor:pointer; }
+  h1 .ap { color:var(--pop); }
+  .tag { margin:4px 0 18px; color:var(--muted); font-size:15px; }
+
+  /* progress */
+  .progress { height:8px; background:var(--tint); border-radius:99px; overflow:hidden; }
+  #bar { height:100%; width:0; background:linear-gradient(90deg,var(--brand),var(--pop)); border-radius:99px; transition:width .35s ease; }
+  .step-label { font-size:12px; color:var(--muted); margin:8px 0 14px; min-height:16px; }
+
+  /* steps */
+  #stage { overflow:hidden; padding:4px; margin:-4px; }
+  .step { display:none; }
+  .step.active { display:block; }
+  .step.in-right { animation:inRight .35s ease both; }
+  .step.in-left { animation:inLeft .35s ease both; }
+  @keyframes inRight { from { opacity:0; transform:translateX(48px); } to { opacity:1; transform:none; } }
+  @keyframes inLeft { from { opacity:0; transform:translateX(-48px); } to { opacity:1; transform:none; } }
+  @keyframes pop { 0% { transform:scale(.5); } 60% { transform:scale(1.18); } 100% { transform:scale(1); } }
+  .emoji { font-size:52px; line-height:1; margin:4px 0 10px; display:block; }
+  .step.active .emoji { animation:pop .5s ease both; }
+  .q { margin:0 0 6px; font-size:24px; line-height:1.2; letter-spacing:-.3px; }
+  .sub { margin:0 0 16px; color:var(--muted); font-size:14px; line-height:1.4; }
+  label { display:block; font-size:14px; font-weight:600; margin:12px 0 6px; }
+  input[type=text], input[type=email], input[type=password] { width:100%; padding:14px; font-size:17px; border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--text); }
+  input:focus { outline:none; border-color:var(--brand); }
+  button:focus-visible, a:focus-visible { outline:3px solid var(--brand); outline-offset:2px; }
+
+  .options { display:grid; gap:10px; }
+  .opt { display:flex; align-items:center; gap:12px; width:100%; min-height:54px; padding:12px 14px; font-size:17px; font-weight:600; text-align:left; color:var(--text); background:#fff; border:1.5px solid var(--line); border-radius:14px; cursor:pointer; transition:border-color .15s, background .15s, transform .1s; }
+  .opt .e { font-size:26px; line-height:1; }
+  .opt:active { transform:scale(.98); }
+  .opt.sel { border-color:var(--brand); background:var(--tint); }
+
+  .showpw { margin-top:10px; font-size:14px; color:var(--brand); font-weight:600; background:none; border:0; padding:8px 0; cursor:pointer; }
+  .check { display:flex; gap:12px; align-items:center; margin-top:6px; padding:14px; border:1.5px solid var(--line); border-radius:14px; font-size:16px; }
+  .check input { width:22px; height:22px; flex:none; accent-color:var(--brand); }
+  .check label { margin:0; font-weight:500; font-size:16px; }
+
+  .actions { display:flex; gap:10px; margin-top:20px; }
+  button.main { flex:1; padding:15px; font-size:17px; font-weight:700; color:#fff; background:var(--brand); border:0; border-radius:12px; cursor:pointer; }
   button.main:active { background:var(--brand-dark); }
   button.main:disabled { opacity:.6; }
-  .msg { margin-top:14px; font-size:14px; min-height:20px; }
+  button.back { padding:15px 18px; font-size:16px; font-weight:600; color:var(--brand); background:var(--tint); border:0; border-radius:12px; cursor:pointer; }
+  .hidden { display:none !important; }
+  .msg { margin-top:12px; font-size:14px; min-height:20px; line-height:1.4; }
   .msg.err { color:var(--err); } .msg.ok { color:var(--ok); }
-  .switch { text-align:center; margin-top:18px; font-size:14px; color:var(--muted); }
+  .switch { text-align:center; margin-top:16px; font-size:14px; color:var(--muted); }
   .switch a { color:var(--brand); font-weight:600; text-decoration:none; cursor:pointer; }
-  .hidden { display:none; }
+  .welcome .emoji { font-size:60px; }
   .welcome h2 { margin:0 0 8px; }
   .welcome p { color:var(--muted); line-height:1.5; }
-  .small { font-size:12px; color:var(--muted); margin-top:20px; text-align:center; }
+  .small { font-size:12px; color:var(--muted); margin-top:20px; text-align:center; line-height:1.5; }
+  .small a { color:var(--brand); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step.in-right, .step.in-left, .step.active .emoji { animation:none; }
+    #bar { transition:none; }
+  }
 </style>
 </head>
 <body>
@@ -43,55 +81,115 @@
   <div class="brand"><img src="/logo.svg" width="44" height="44" alt=""><h1>MeetEm<span class="ap">&#8217;</span></h1></div>
   <p class="tag">College Meet Up</p>
 
-  <!-- Sign up / sign in form -->
   <form id="authForm" novalidate>
-    <div id="signupFields">
-      <label for="name">First name</label>
-      <input id="name" type="text" autocomplete="given-name" placeholder="Anya">
-
-      <label for="year">Year</label>
-      <select id="year">
-        <option value="">Choose one</option>
-        <option>Freshman</option>
-        <option>Sophomore</option>
-        <option>Transfer</option>
-        <option>Junior or senior</option>
-        <option>Other</option>
-      </select>
-
-      <label for="commute">Commute or live on campus?</label>
-      <select id="commute">
-        <option value="">Choose one</option>
-        <option>I commute</option>
-        <option>I live on campus</option>
-      </select>
+    <div id="progressWrap">
+      <div class="progress" aria-hidden="true"><div id="bar"></div></div>
+      <div id="stepLabel" class="step-label" aria-live="polite"></div>
     </div>
 
-    <label for="email">School email (.edu)</label>
-    <input id="email" type="email" autocomplete="email" placeholder="you@school.edu" inputmode="email">
+    <div id="stage">
+      <!-- 1 name -->
+      <section class="step" data-step="name">
+        <span class="emoji" aria-hidden="true">&#128075;</span>
+        <h2 class="q">Hey! What's your first name?</h2>
+        <p class="sub">This is the name other students will see.</p>
+        <label for="name">First name</label>
+        <input id="name" type="text" autocomplete="given-name" maxlength="30" placeholder="Your first name">
+      </section>
 
-    <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="current-password" placeholder="At least 8 characters">
+      <!-- 2 year -->
+      <section class="step" data-step="year">
+        <span class="emoji" aria-hidden="true">&#127891;</span>
+        <h2 class="q" id="yearQ">What year are you?</h2>
+        <p class="sub">Tap one to keep going.</p>
+        <div class="options" role="group" aria-label="Year in school">
+          <button type="button" class="opt" data-field="year" data-value="Freshman"><span class="e" aria-hidden="true">&#127793;</span>Freshman</button>
+          <button type="button" class="opt" data-field="year" data-value="Sophomore"><span class="e" aria-hidden="true">&#128216;</span>Sophomore</button>
+          <button type="button" class="opt" data-field="year" data-value="Transfer"><span class="e" aria-hidden="true">&#128260;</span>Transfer</button>
+          <button type="button" class="opt" data-field="year" data-value="Junior or senior"><span class="e" aria-hidden="true">&#127775;</span>Junior or senior</button>
+          <button type="button" class="opt" data-field="year" data-value="Other"><span class="e" aria-hidden="true">&#10024;</span>Other</button>
+        </div>
+      </section>
 
-    <div id="ageRow" class="check">
-      <input id="age" type="checkbox">
-      <label for="age" style="margin:0;font-weight:400">I'm 18 or older</label>
+      <!-- 3 commute -->
+      <section class="step" data-step="commute">
+        <span class="emoji" aria-hidden="true">&#128652;</span>
+        <h2 class="q">How do you get to campus?</h2>
+        <p class="sub">This helps us find meetups that fit your day.</p>
+        <div class="options" role="group" aria-label="Commute or on campus">
+          <button type="button" class="opt" data-field="commute" data-value="I commute"><span class="e" aria-hidden="true">&#128663;</span>I commute</button>
+          <button type="button" class="opt" data-field="commute" data-value="I live on campus"><span class="e" aria-hidden="true">&#127968;</span>I live on campus</button>
+        </div>
+      </section>
+
+      <!-- 4 email -->
+      <section class="step" data-step="email">
+        <span class="emoji" aria-hidden="true">&#128231;</span>
+        <h2 class="q">What's your school email?</h2>
+        <p class="sub">It has to end in .edu. It keeps MeetEm' students-only.</p>
+        <label for="email">School email</label>
+        <input id="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" placeholder="you@school.edu">
+      </section>
+
+      <!-- 5 password -->
+      <section class="step" data-step="password">
+        <span class="emoji" aria-hidden="true">&#128274;</span>
+        <h2 class="q">Create a password</h2>
+        <p class="sub">At least 8 characters.</p>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+        <button type="button" class="showpw" id="showPw">Show password</button>
+      </section>
+
+      <!-- 6 age -->
+      <section class="step" data-step="age">
+        <span class="emoji" aria-hidden="true">&#127881;</span>
+        <h2 class="q">Last thing!</h2>
+        <p class="sub">MeetEm' is for students 18 and older.</p>
+        <div class="check">
+          <input id="age" type="checkbox">
+          <label for="age">I'm 18 or older</label>
+        </div>
+      </section>
+
+      <!-- sent -->
+      <section class="step" data-step="sent">
+        <span class="emoji" aria-hidden="true">&#128236;</span>
+        <h2 class="q">Check your email!</h2>
+        <p class="sub">We sent a confirmation link to your school email. Tap it, then come back here and sign in. Check spam if you don't see it.</p>
+        <button type="button" class="main" id="toSignin" style="width:100%">Go to sign in</button>
+      </section>
+
+      <!-- sign in -->
+      <section class="step" data-step="signin">
+        <span class="emoji" aria-hidden="true">&#128591;</span>
+        <h2 class="q">Welcome back!</h2>
+        <p class="sub">Sign in to pick up where you left off.</p>
+        <label for="siEmail">School email</label>
+        <input id="siEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" placeholder="you@school.edu">
+        <label for="siPassword">Password</label>
+        <input id="siPassword" type="password" autocomplete="current-password" placeholder="Your password">
+      </section>
     </div>
 
-    <button id="submitBtn" class="main" type="submit">Create account</button>
+    <div id="actions" class="actions">
+      <button id="backBtn" class="back" type="button">&larr; Back</button>
+      <button id="nextBtn" class="main" type="submit">Continue</button>
+    </div>
     <div id="msg" class="msg" role="status"></div>
   </form>
 
-  <p id="switchRow" class="switch">Already have an account? <a id="toggle">Sign in</a></p>
+  <p id="switchRow" class="switch">Already have an account? <a id="toggle" role="button" tabindex="0">Sign in</a></p>
 
   <!-- Shown after sign in -->
   <div id="welcome" class="welcome hidden">
+    <span class="emoji" aria-hidden="true">&#127881;</span>
     <h2 id="welcomeTitle">Welcome!</h2>
     <p>You're in. Next we'll add class times and small-group meetups. For now, you're on the list.</p>
-    <button id="signOutBtn" class="main" type="button">Sign out</button>
+    <button id="signOutBtn" class="main" type="button" style="width:100%">Sign out</button>
   </div>
 
-  <p class="small">Only first name, year and major are shown to other students.<br>By signing up you agree to our <a href="/privacy.html" style="color:var(--brand)">Privacy Policy</a>.</p>
+  <p class="small">Only first name, year and major are shown to other students.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
 </div>
 
 <script>
@@ -101,22 +199,65 @@
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const $ = (id) => document.getElementById(id);
-  let mode = "signup";
+  const STEPS = ["name", "year", "commute", "email", "password", "age"];
+  const OPTION_STEPS = ["year", "commute"];
+  const answers = { year: "", commute: "" };
+  let mode = "signup";   // "signup" | "signin"
+  let idx = 0;
+  let current = "name";
 
   function setMsg(text, type) { const m = $("msg"); m.textContent = text || ""; m.className = "msg " + (type || ""); }
+
+  function render(key, dir) {
+    current = key;
+    document.querySelectorAll(".step").forEach((s) => {
+      const on = s.dataset.step === key;
+      s.classList.remove("in-right", "in-left");
+      s.classList.toggle("active", on);
+      if (on && dir) s.classList.add(dir > 0 ? "in-right" : "in-left");
+    });
+
+    const isFlow = STEPS.includes(key);
+    $("progressWrap").classList.toggle("hidden", !isFlow);
+    if (isFlow) {
+      $("bar").style.width = ((idx + 1) / STEPS.length * 100) + "%";
+      $("stepLabel").textContent = "Step " + (idx + 1) + " of " + STEPS.length;
+    }
+
+    const isOption = OPTION_STEPS.includes(key);
+    const isSent = key === "sent";
+    $("actions").classList.toggle("hidden", isSent);
+    $("backBtn").classList.toggle("hidden", !(isFlow && idx > 0));
+    $("nextBtn").classList.toggle("hidden", isOption);
+    $("nextBtn").textContent = key === "age" ? "Create account \u{1F680}" : key === "signin" ? "Sign in" : "Continue";
+
+    // Focus the first field on text steps (not on tap-to-choose steps)
+    const active = document.querySelector('.step.active input[type=text], .step.active input[type=email], .step.active input[type=password]');
+    if (active && dir !== 0) setTimeout(() => active.focus({ preventScroll: true }), 380);
+  }
+
+  function go(delta) {
+    idx = Math.max(0, Math.min(STEPS.length - 1, idx + delta));
+    setMsg("");
+    render(STEPS[idx], delta);
+  }
 
   function setMode(next) {
     mode = next;
     const signup = mode === "signup";
-    $("signupFields").classList.toggle("hidden", !signup);
-    $("ageRow").classList.toggle("hidden", !signup);
-    $("submitBtn").textContent = signup ? "Create account" : "Sign in";
     $("switchRow").innerHTML = signup
-      ? 'Already have an account? <a id="toggle">Sign in</a>'
-      : 'New here? <a id="toggle">Create account</a>';
-    $("toggle").onclick = () => setMode(signup ? "signin" : "signup");
-    $("password").autocomplete = signup ? "new-password" : "current-password";
+      ? 'Already have an account? <a id="toggle" role="button" tabindex="0">Sign in</a>'
+      : 'New here? <a id="toggle" role="button" tabindex="0">Create account</a>';
+    bindToggle();
     setMsg("");
+    if (signup) render(STEPS[idx], 0); else render("signin", 1);
+  }
+
+  function bindToggle() {
+    const t = $("toggle");
+    const flip = () => setMode(mode === "signup" ? "signin" : "signup");
+    t.onclick = flip;
+    t.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } };
   }
 
   function showWelcome(user) {
@@ -134,48 +275,99 @@
     setMode("signin");
   }
 
-  $("authForm").addEventListener("submit", async (e) => {
+  function validate(key) {
+    if (key === "name") {
+      if (!$("name").value.trim()) { setMsg("Please enter your first name.", "err"); return false; }
+    } else if (key === "email") {
+      const email = $("email").value.trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.edu$/.test(email)) { setMsg("Please use your school email ending in .edu.", "err"); return false; }
+    } else if (key === "password") {
+      if ($("password").value.length < 8) { setMsg("Password must be at least 8 characters.", "err"); return false; }
+    } else if (key === "age") {
+      if (!$("age").checked) { setMsg("You must be 18 or older to join.", "err"); return false; }
+    }
+    return true;
+  }
+
+  // Tap-to-choose steps: pick, then slide on
+  document.querySelectorAll(".opt").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const field = btn.dataset.field;
+      answers[field] = btn.dataset.value;
+      btn.parentElement.querySelectorAll(".opt").forEach((b) => b.classList.toggle("sel", b === btn));
+      setMsg("");
+      setTimeout(() => go(1), 250);
+    });
+  });
+
+  $("name").addEventListener("input", () => {
+    const n = $("name").value.trim();
+    $("yearQ").textContent = n ? "Nice to meet you, " + n + "! What year are you?" : "What year are you?";
+  });
+
+  $("showPw").addEventListener("click", () => {
+    const p = $("password");
+    const show = p.type === "password";
+    p.type = show ? "text" : "password";
+    $("showPw").textContent = show ? "Hide password" : "Show password";
+  });
+
+  $("backBtn").addEventListener("click", () => go(-1));
+  $("toSignin").addEventListener("click", () => { $("siEmail").value = $("email").value; setMode("signin"); });
+
+  async function doSignUp() {
+    const email = $("email").value.trim().toLowerCase();
+    const first_name = $("name").value.trim();
+    if (!answers.year || !answers.commute) { setMsg("Please go back and choose your year and how you get to campus.", "err"); return; }
+    $("nextBtn").disabled = true;
+    try {
+      const { data, error } = await db.auth.signUp({
+        email,
+        password: $("password").value,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: { first_name, year: answers.year, commute: answers.commute }
+        }
+      });
+      if (error) return setMsg(error.message, "err");
+      if (data.session) showWelcome(data.user);
+      else render("sent", 1);
+    } finally {
+      $("nextBtn").disabled = false;
+    }
+  }
+
+  async function doSignIn() {
+    const email = $("siEmail").value.trim().toLowerCase();
+    const password = $("siPassword").value;
+    if (!/^[^@\s]+@[^@\s]+\.edu$/.test(email)) return setMsg("Please use your school email ending in .edu.", "err");
+    if (!password) return setMsg("Please enter your password.", "err");
+    $("nextBtn").disabled = true;
+    try {
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      if (error) return setMsg(error.message, "err");
+      showWelcome(data.user);
+    } finally {
+      $("nextBtn").disabled = false;
+    }
+  }
+
+  $("authForm").addEventListener("submit", (e) => {
     e.preventDefault();
     setMsg("");
-    const email = $("email").value.trim().toLowerCase();
-    const password = $("password").value;
-
-    if (!/^[^@\s]+@[^@\s]+\.edu$/.test(email)) return setMsg("Please use your school email ending in .edu.", "err");
-    if (password.length < 8) return setMsg("Password must be at least 8 characters.", "err");
-
-    $("submitBtn").disabled = true;
-    try {
-      if (mode === "signup") {
-        const first_name = $("name").value.trim();
-        if (!first_name) return setMsg("Please enter your first name.", "err");
-        if (!$("year").value || !$("commute").value) return setMsg("Please choose your year and commute option.", "err");
-        if (!$("age").checked) return setMsg("You must be 18 or older to join.", "err");
-
-        const { data, error } = await db.auth.signUp({
-          email, password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { first_name, year: $("year").value, commute: $("commute").value }
-          }
-        });
-        if (error) return setMsg(error.message, "err");
-        if (data.session) { showWelcome(data.user); }
-        else { setMsg("Check your school email and tap the confirmation link, then come back and sign in.", "ok"); }
-      } else {
-        const { data, error } = await db.auth.signInWithPassword({ email, password });
-        if (error) return setMsg(error.message, "err");
-        showWelcome(data.user);
-      }
-    } finally {
-      $("submitBtn").disabled = false;
-    }
+    if (mode === "signin") return doSignIn();
+    if (OPTION_STEPS.includes(current)) return;
+    if (!validate(current)) return;
+    if (current === "age") return doSignUp();
+    go(1);
   });
 
   $("signOutBtn").addEventListener("click", async () => { await db.auth.signOut(); showForm(); });
 
   // Keep people signed in between visits
   db.auth.getSession().then(({ data }) => { if (data.session) showWelcome(data.session.user); });
-  setMode("signup");
+  bindToggle();
+  render("name", 0);
 </script>
 </body>
 </html>
