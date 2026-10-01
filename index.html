@@ -170,6 +170,27 @@
   body.app #eventFormView { max-width:560px; margin:0 auto; }
   @media (min-width:640px) { .gallery { grid-template-columns:repeat(4,1fr); } .cover { height:170px; } }
 
+  .evbtns { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .chatbtn { padding:10px 16px; min-height:44px; font-size:15px; font-weight:700; color:#fff; background:var(--brand); border:0; border-radius:99px; cursor:pointer; }
+  .chatbtn.in { color:var(--brand-dark); background:var(--tint); }
+  .going { font-size:13px; color:var(--muted); }
+  .chat-head { display:flex; align-items:center; gap:10px; margin:0 0 10px; }
+  .chat-head .titles { flex:1; min-width:0; text-align:left; }
+  .chat-head h2 { margin:0; font-size:20px; line-height:1.2; overflow-wrap:anywhere; }
+  .chat-head .sub { margin:2px 0 0; font-size:13px; }
+  .chatlog { display:flex; flex-direction:column; gap:8px; height:min(52vh,520px); overflow-y:auto; padding:10px; background:var(--bg); border-radius:14px; border:1.5px solid var(--line); }
+  .bub { max-width:84%; align-self:flex-start; padding:8px 12px; border-radius:16px 16px 16px 4px; background:#fff; border:1px solid var(--line); font-size:15px; line-height:1.4; text-align:left; }
+  .bub.me { align-self:flex-end; background:var(--brand); border-color:var(--brand); color:#fff; border-radius:16px 16px 4px 16px; }
+  .bub .who { display:block; font-size:12px; font-weight:700; color:var(--brand-dark); margin-bottom:1px; }
+  .bub .txt { white-space:pre-wrap; overflow-wrap:anywhere; }
+  .bub .meta { display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-top:2px; font-size:11px; opacity:.8; }
+  .bub .meta button { font-size:12px; font-weight:600; color:inherit; background:none; border:0; padding:8px 6px; min-height:36px; cursor:pointer; text-decoration:underline; }
+  .chatbar { display:flex; gap:8px; margin-top:10px; }
+  .chatbar input { flex:1; min-width:0; }
+  .chatbar .main { flex:none; padding:0 20px; }
+  .chat-empty { margin:auto; text-align:center; color:var(--muted); font-size:14px; padding:20px; line-height:1.5; }
+  body.app #eventChatView { max-width:620px; margin:0 auto; }
+
   @media (prefers-reduced-motion: reduce) {
     .step.in-right, .step.in-left, .step.active .emoji { animation:none; }
     #bar { transition:none; }
@@ -416,6 +437,12 @@
           <div id="galleryMsg" class="msg" role="status"></div>
         </section>
 
+        <section class="pg-sec hidden" id="pgBlocks">
+          <h3>Blocked students <small id="blockCount"></small></h3>
+          <p class="sub" style="margin-bottom:10px">You won't see messages from people you block.</p>
+          <button type="button" class="ghost" id="unblockAll" style="margin-top:0">Unblock everyone</button>
+        </section>
+
         <section class="pg-sec">
           <h3>My music <small id="musicCount"></small></h3>
           <p class="sub" style="margin-bottom:10px">Paste a Spotify or TikTok link. Spotify shows a player. TikTok shows a button that opens TikTok.</p>
@@ -436,6 +463,21 @@
         <div id="eventList" aria-live="polite"></div>
         <div id="evListMsg" class="msg" role="status"></div>
         <p class="small" style="margin-top:8px">Posted by students, not checked by MeetEm'. Meet in public places and never send money to someone you haven't met. Tap Report on anything that looks off.</p>
+      </div>
+
+      <div id="eventChatView" class="hidden">
+        <div class="chat-head">
+          <button type="button" class="back" id="chatBack" aria-label="Back to events">&larr;</button>
+          <div class="titles"><h2 id="chatTitle"></h2><p class="sub" id="chatSub"></p></div>
+          <button type="button" class="linkbtn" id="chatLeave">Leave</button>
+        </div>
+        <div class="notice">💬 Be kind. Keep plans in this chat and meet in public places. Don't share your address or phone number. Tap Report or Block on anything that feels off.</div>
+        <div class="chatlog" id="chatLog" role="log" aria-live="polite"></div>
+        <div class="chatbar">
+          <input id="chatInput" type="text" maxlength="500" autocomplete="off" placeholder="Say something..." aria-label="Message">
+          <button type="button" class="main" id="chatSend">Send</button>
+        </div>
+        <div id="chatMsg" class="msg" role="status"></div>
       </div>
 
       <div id="eventFormView" class="hidden" style="text-align:left">
@@ -888,7 +930,7 @@
     document.querySelectorAll("#tabs .tab").forEach((t) => { const on = t.dataset.tab === name; t.classList.toggle("sel", on); t.setAttribute("aria-selected", String(on)); });
     document.querySelectorAll("#welcome .panel").forEach((p) => p.classList.toggle("hidden", p.id !== "tab" + name));
     if (name === "Events") { showEventList(); loadEvents(); }
-    if (name === "Page") { renderGallery(); renderMusic(); }
+    if (name === "Page") { renderGallery(); renderMusic(); loadBlocks(); }
     window.scrollTo(0, 0);
   }
   document.querySelectorAll("#tabs .tab").forEach((t) => t.addEventListener("click", () => selectTab(t.dataset.tab)));
@@ -915,13 +957,13 @@
     EVENT_CATS.forEach(([e, label]) => { const o = el("option", "", e + " " + label); o.value = label; sel.appendChild(o); });
   }
 
-  function showEventList() { $("eventFormView").classList.add("hidden"); $("eventListView").classList.remove("hidden"); }
+  function showEventList() { stopChat(); $("eventFormView").classList.add("hidden"); $("eventChatView").classList.add("hidden"); $("eventListView").classList.remove("hidden"); }
   function showEventForm() {
     ["evTitle", "evWhere", "evPrice", "evDesc", "evLink", "evWhen"].forEach((i) => { $(i).value = ""; });
     $("evAgree").checked = false; evPhotoBlob = null; $("evPhotoName").textContent = "";
     $("evCat").value = EVENT_CATS[0][1]; $("evTicketNote").classList.add("hidden");
     setEvMsg("evFormMsg", "");
-    $("eventListView").classList.add("hidden"); $("eventFormView").classList.remove("hidden");
+    stopChat(); $("eventListView").classList.add("hidden"); $("eventChatView").classList.add("hidden"); $("eventFormView").classList.remove("hidden");
     $("evTitle").focus();
   }
   $("evPostBtn").addEventListener("click", showEventForm);
@@ -935,6 +977,13 @@
     catch (e) { setEvMsg("evFormMsg", "Sorry, that photo didn't load.", "err"); }
     $("evPhotoInput").value = "";
   });
+
+  function myDisplayName() {
+    const meta = (currentUser && currentUser.user_metadata) || {};
+    const first = (currentProfile && currentProfile.first_name) || meta.first_name || "A student";
+    const li = currentProfile && currentProfile.last_initial ? " " + currentProfile.last_initial + "." : "";
+    return first + li;
+  }
 
   function safeLink(raw) {
     try { const u = new URL(raw); return u.protocol === "https:" ? u : null; } catch (e) { return null; }
@@ -959,22 +1008,20 @@
         const up = await db.storage.from("event-photos").upload(path, evPhotoBlob, { contentType: "image/jpeg" });
         if (up.error) { console.error(up.error); setEvMsg("evFormMsg", "Your photo didn't upload, so it was skipped.", "err"); } else photo_path = path;
       }
-      const meta = currentUser.user_metadata || {};
-      const first = (currentProfile && currentProfile.first_name) || meta.first_name || "A student";
-      const li = currentProfile && currentProfile.last_initial ? " " + currentProfile.last_initial + "." : "";
-      const row = { user_id: uid, poster_name: first + li, title, category: cat, starts_at: whenDate.toISOString(), location: where || null, price_text: price || null, description: desc || null, link_url: link, photo_path };
-      const { error } = await db.from("events").insert(row);
+      const row = { user_id: uid, poster_name: myDisplayName(), title, category: cat, starts_at: whenDate.toISOString(), location: where || null, price_text: price || null, description: desc || null, link_url: link, photo_path };
+      const { data: created, error } = await db.from("events").insert(row).select("id").single();
       if (error) {
         console.error(error);
         if (photo_path) db.storage.from("event-photos").remove([photo_path]);
         return setEvMsg("evFormMsg", /row-level security|policy/i.test(error.message) ? "You can post up to 5 times a day. Try again tomorrow." : "Couldn't post: " + error.message, "err");
       }
+      if (created && created.id) await db.from("event_members").insert({ event_id: created.id, user_id: uid, display_name: myDisplayName() });   // the host joins their own chat
       showEventList(); loadEvents(); setEvMsg("evListMsg", "Posted! 🎉", "ok");
     } finally { $("evSubmit").disabled = false; }
   }
   $("evSubmit").addEventListener("click", submitEvent);
 
-  function eventCard(e, photoUrl) {
+  function eventCard(e, photoUrl, chat) {
     const card = el("article", "ev");
     if (photoUrl) { const i = document.createElement("img"); i.src = photoUrl; i.alt = ""; card.appendChild(i); }
     card.appendChild(el("span", "cat", catEmoji(e.category) + " " + e.category));
@@ -990,6 +1037,15 @@
     if (u) {
       const links = el("div", "links"); const a = el("a", "go", "Open link ↗");
       a.href = u.href; a.target = "_blank"; a.rel = "noopener noreferrer"; links.appendChild(a); card.appendChild(links);
+    }
+    if (chat && chat.ready) {
+      const bar = el("div", "evbtns");
+      const joined = chat.mine.has(e.id), n = chat.counts[e.id] || 0;
+      const cb = el("button", "chatbtn" + (joined ? " in" : ""), joined ? "Open chat 💬" : "Join & chat 💬"); cb.type = "button";
+      cb.addEventListener("click", () => joined ? openChat(e) : joinEvent(e, cb));
+      bar.appendChild(cb);
+      if (joined || n) bar.appendChild(el("span", "going", n + (n === 1 ? " person" : " people") + " going"));
+      card.appendChild(bar);
     }
     const foot = el("div", "foot"); foot.appendChild(el("span", "", "Posted by " + (e.poster_name || "a student")));
     const mine = currentUser && e.user_id === currentUser.id;
@@ -1029,8 +1085,146 @@
       try { const r = await db.storage.from("event-photos").createSignedUrls(paths, 3600); (r.data || []).forEach((x) => { if (x.signedUrl) urls[x.path] = x.signedUrl; }); } catch (err) { /* photos are optional */ }
     }
     if (id !== evLoadId) return;
-    list.replaceChildren(...data.map((e) => eventCard(e, urls[e.photo_path])));
+    const chat = { ready: false, mine: new Set(), counts: {} };
+    try {
+      const ids = data.map((e) => e.id);
+      const [m, c] = await Promise.all([
+        db.from("event_members").select("event_id").eq("user_id", currentUser.id).in("event_id", ids),
+        db.rpc("event_member_counts", { ids })
+      ]);
+      if (!m.error) { chat.ready = true; (m.data || []).forEach((r) => chat.mine.add(r.event_id)); }
+      if (!c.error) (c.data || []).forEach((r) => { chat.counts[r.event_id] = r.n; });
+    } catch (err) { /* chat is optional until the setup is run */ }
+    if (id !== evLoadId) return;
+    list.replaceChildren(...data.map((e) => eventCard(e, urls[e.photo_path], chat)));
   }
+
+  /* ---------- event group chats ---------- */
+  let currentChat = null, chatTimer = null, chatSig = "", chatBusy = false, chatBase = "";
+  const timeShort = (iso) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+
+  async function joinEvent(e, btn) {
+    btn.disabled = true;
+    const { error } = await db.from("event_members").insert({ event_id: e.id, user_id: currentUser.id, display_name: myDisplayName() });
+    btn.disabled = false;
+    if (error && error.code !== "23505") {
+      console.error(error);
+      return setEvMsg("evListMsg", /row-level|policy/i.test(error.message) ? "That group is full (12 people max)." : "Couldn't join: " + error.message, "err");
+    }
+    openChat(e);
+  }
+
+  async function openChat(e) {
+    currentChat = e; chatSig = "";
+    $("chatTitle").textContent = e.title;
+    chatBase = new Date(e.starts_at).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + (e.location ? " · " + e.location : "");
+    $("chatSub").textContent = chatBase;
+    $("chatInput").value = ""; setEvMsg("chatMsg", "");
+    $("eventListView").classList.add("hidden"); $("eventFormView").classList.add("hidden"); $("eventChatView").classList.remove("hidden");
+    window.scrollTo(0, 0);
+    await loadMessages(true);
+    clearInterval(chatTimer);
+    chatTimer = setInterval(() => { if (!document.hidden) loadMessages(false); }, 4000);
+  }
+  function stopChat() { clearInterval(chatTimer); chatTimer = null; currentChat = null; }
+  function closeChat() { showEventList(); loadEvents(); }
+
+  async function loadMessages(forceScroll) {
+    if (!currentChat || chatBusy) return;
+    chatBusy = true;
+    const chatId = currentChat.id;
+    try {
+      const { data, error } = await db.from("event_messages").select("*").eq("event_id", chatId).order("created_at", { ascending: true }).limit(200);
+      if (!currentChat || currentChat.id !== chatId) return;
+      const log = $("chatLog");
+      if (error) { console.error(error); log.replaceChildren(el("div", "chat-empty", "Chat isn't switched on yet. The site owner needs to finish the chat setup in Supabase.")); return; }
+      const sig = data.length + ":" + (data.length ? data[data.length - 1].id : "");
+      if (sig === chatSig && !forceScroll) return;
+      chatSig = sig;
+      const nearBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+      if (!data.length) { log.replaceChildren(el("div", "chat-empty", "No messages yet. Say hi and set a time and place! 👋")); return; }
+      log.replaceChildren(...data.map(messageBubble));
+      if (forceScroll || nearBottom) log.scrollTop = log.scrollHeight;
+    } finally { chatBusy = false; }
+    rpcCount(chatId);
+  }
+  async function rpcCount(id) {
+    try {
+      const r = await db.rpc("event_member_counts", { ids: [id] });
+      const n = r.data && r.data[0] ? r.data[0].n : 0;
+      if (currentChat && currentChat.id === id && n) $("chatSub").textContent = chatBase + " · " + n + (n === 1 ? " person" : " people") + " in this chat";
+    } catch (e) { /* count is optional */ }
+  }
+
+  function messageBubble(m) {
+    const mine = m.user_id === currentUser.id;
+    const b = el("div", "bub" + (mine ? " me" : ""));
+    if (!mine) b.appendChild(el("span", "who", m.sender_name || "A student"));
+    b.appendChild(el("span", "txt", m.body));
+    const meta = el("div", "meta"); meta.appendChild(el("span", "", timeShort(m.created_at)));
+    const act = (label, fn) => { const x = el("button", "", label); x.type = "button"; x.addEventListener("click", fn); meta.appendChild(x); };
+    if (mine) act("Delete", async () => {
+      if (!confirm("Delete this message?")) return;
+      const { error } = await db.from("event_messages").delete().eq("id", m.id);
+      if (error) return setEvMsg("chatMsg", "Couldn't delete it.", "err");
+      loadMessages(true);
+    });
+    else {
+      act("Report", async () => {
+        if (!confirm("Report this message as rude, spam, or unsafe?")) return;
+        const { error } = await db.from("message_reports").insert({ message_id: m.id, reporter_id: currentUser.id, reason: "reported" });
+        if (error && error.code !== "23505") return setEvMsg("chatMsg", "Couldn't send the report. Try again.", "err");
+        setEvMsg("chatMsg", "Thanks for the report. We'll look at it.", "ok");
+      });
+      act("Block", async () => {
+        if (!confirm("Block " + (m.sender_name || "this student") + "? You won't see their messages anymore.")) return;
+        const { error } = await db.from("user_blocks").insert({ blocker_id: currentUser.id, blocked_id: m.user_id });
+        if (error && error.code !== "23505") return setEvMsg("chatMsg", "Couldn't block them. Try again.", "err");
+        setEvMsg("chatMsg", "Blocked. You can unblock from My page.", "ok");
+        loadMessages(true);
+      });
+    }
+    b.appendChild(meta);
+    return b;
+  }
+
+  async function sendMessage() {
+    if (!currentChat) return;
+    const body = $("chatInput").value.trim();
+    if (!body) return;
+    $("chatSend").disabled = true;
+    try {
+      const { error } = await db.from("event_messages").insert({ event_id: currentChat.id, user_id: currentUser.id, sender_name: myDisplayName(), body });
+      if (error) { console.error(error); return setEvMsg("chatMsg", /row-level|policy/i.test(error.message) ? "Slow down a little, then try again." : "Couldn't send: " + error.message, "err"); }
+      $("chatInput").value = ""; setEvMsg("chatMsg", "");
+      await loadMessages(true);
+    } finally { $("chatSend").disabled = false; $("chatInput").focus(); }
+  }
+  $("chatSend").addEventListener("click", sendMessage);
+  $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
+  $("chatBack").addEventListener("click", closeChat);
+  $("chatLeave").addEventListener("click", async () => {
+    if (!currentChat || !confirm("Leave this chat? You can join again later.")) return;
+    const { error } = await db.from("event_members").delete().eq("event_id", currentChat.id).eq("user_id", currentUser.id);
+    if (error) return setEvMsg("chatMsg", "Couldn't leave. Try again.", "err");
+    closeChat();
+  });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && currentChat) loadMessages(false); });
+
+  /* ---------- blocked students (My page) ---------- */
+  async function loadBlocks() {
+    try {
+      const { data, error } = await db.from("user_blocks").select("blocked_id").eq("blocker_id", currentUser.id);
+      const n = !error && data ? data.length : 0;
+      $("pgBlocks").classList.toggle("hidden", n === 0);
+      $("blockCount").textContent = n ? String(n) : "";
+    } catch (e) { $("pgBlocks").classList.add("hidden"); }
+  }
+  $("unblockAll").addEventListener("click", async () => {
+    if (!confirm("Unblock everyone you've blocked?")) return;
+    await db.from("user_blocks").delete().eq("blocker_id", currentUser.id);
+    loadBlocks();
+  });
 
   /* ---------- gallery ---------- */
   const MAX_GALLERY = 4;
