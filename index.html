@@ -137,7 +137,7 @@
   .topbar .brand-sm { display:flex; align-items:center; gap:8px; font-size:22px; font-weight:800; color:var(--brand); letter-spacing:-.4px; }
   .topbar .brand-sm .ap { color:var(--pop); }
   .topbar button { padding:10px 14px; min-height:44px; font-size:14px; font-weight:700; color:var(--brand); background:var(--tint); border:0; border-radius:99px; cursor:pointer; }
-  body.app .tabs { position:fixed; left:0; right:0; bottom:0; z-index:6; margin:0; border-radius:0; padding:8px 12px; padding-bottom:calc(8px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid var(--line); grid-template-columns:repeat(2,minmax(0,300px)); justify-content:center; }
+  body.app .tabs { position:fixed; left:0; right:0; bottom:0; z-index:6; margin:0; border-radius:0; padding:6px 8px; padding-bottom:calc(6px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid var(--line); justify-content:center; }
   body.app .small { padding:0 16px 110px; margin-top:8px; }
   .page { max-width:760px; margin:0 auto; padding:0 16px 24px; text-align:left; }
   .cover { height:130px; background:linear-gradient(120deg,var(--brand),var(--pop)); margin:0 -16px; }
@@ -190,6 +190,41 @@
   .chatbar .main { flex:none; padding:0 20px; }
   .chat-empty { margin:auto; text-align:center; color:var(--muted); font-size:14px; padding:20px; line-height:1.5; }
   body.app #eventChatView { max-width:620px; margin:0 auto; }
+
+  /* ---- 4-tab bar ---- */
+  body.app .tabs { grid-template-columns:repeat(4,minmax(0,170px)); gap:4px; }
+  .tab { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-height:52px; font-size:12px; line-height:1.1; }
+  .tab .ti { font-size:20px; line-height:1; }
+  .tab .badge { position:absolute; top:2px; right:calc(50% - 22px); min-width:18px; height:18px; padding:0 5px; border-radius:99px; background:var(--pop); color:#fff; font-size:11px; font-weight:800; line-height:18px; }
+  .tab { position:relative; }
+  /* ---- matches ---- */
+  .intro { margin:0 0 12px; color:var(--muted); font-size:14px; line-height:1.45; text-align:left; }
+  body.app #tabMatches, body.app #tabMessages { max-width:1000px; margin:0 auto; padding:16px 16px 0; text-align:left; }
+  .mlist { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+  .mc { background:#fff; border:1.5px solid var(--line); border-radius:18px; padding:14px; }
+  .mc.new { border-color:var(--pop); box-shadow:0 0 0 3px #ffe9e5; }
+  .mc-top { display:flex; gap:12px; align-items:center; }
+  .mc-av { width:64px; height:64px; flex:none; border-radius:50%; background:var(--tint); display:flex; align-items:center; justify-content:center; font-size:28px; overflow:hidden; }
+  .mc-av img { width:100%; height:100%; object-fit:cover; display:block; }
+  .mc-who { flex:1; min-width:0; }
+  .mc-who h3 { margin:0; font-size:18px; }
+  .mc-who p { margin:2px 0 0; font-size:14px; color:var(--muted); overflow-wrap:anywhere; }
+  .pct { flex:none; text-align:center; font-size:20px; font-weight:800; color:var(--brand-dark); background:var(--tint); border-radius:14px; padding:6px 10px; line-height:1.1; }
+  .pct small { display:block; font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.3px; }
+  .why { list-style:none; margin:12px 0 0; padding:0; font-size:14px; line-height:1.45; }
+  .why li { margin:3px 0; }
+  .mc .fact { margin:10px 0 0; font-size:14px; color:var(--text); background:var(--bg); border-radius:10px; padding:8px 10px; overflow-wrap:anywhere; }
+  .mc .acts { margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .mc .acts .note { font-size:13px; color:var(--muted); }
+  .chatrow { display:flex; gap:12px; align-items:center; width:100%; text-align:left; background:#fff; border:1.5px solid var(--line); border-radius:16px; padding:12px; cursor:pointer; font:inherit; color:inherit; }
+  .chatrow h3 { margin:0; font-size:16px; overflow-wrap:anywhere; }
+  .chatrow p { margin:2px 0 0; font-size:13px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
+  .chatrow .ci { flex:none; width:44px; height:44px; border-radius:50%; background:var(--tint); display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .chatrow .tx { flex:1; min-width:0; }
+  .clist { display:grid; gap:10px; }
+  .switchrow { display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid var(--line); border-radius:14px; background:#fff; font-size:15px; }
+  .switchrow input { width:22px; height:22px; accent-color:var(--brand); flex:none; }
+  .switchrow label { margin:0; font-weight:500; font-size:15px; }
 
   @media (prefers-reduced-motion: reduce) {
     .step.in-right, .step.in-left, .step.active .emoji { animation:none; }
@@ -409,11 +444,13 @@
     </header>
 
     <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
-      <button type="button" class="tab sel" role="tab" data-tab="Page" aria-selected="true">🙋 My page</button>
-      <button type="button" class="tab" role="tab" data-tab="Events" aria-selected="false">🎟️ Events</button>
+      <button type="button" class="tab sel" role="tab" data-tab="Matches" aria-selected="true"><span class="ti" aria-hidden="true">✨</span>Matches</button>
+      <button type="button" class="tab" role="tab" data-tab="Events" aria-selected="false"><span class="ti" aria-hidden="true">🎟️</span>Events</button>
+      <button type="button" class="tab" role="tab" data-tab="Messages" aria-selected="false"><span class="ti" aria-hidden="true">💬</span>Messages<span class="badge hidden" id="msgBadge"></span></button>
+      <button type="button" class="tab" role="tab" data-tab="Page" aria-selected="false"><span class="ti" aria-hidden="true">🙋</span>Me</button>
     </nav>
 
-    <div id="tabPage" class="panel">
+    <div id="tabPage" class="panel hidden">
       <div class="cover" aria-hidden="true"></div>
       <div class="page">
         <div class="avatar pg-avatar" id="welcomeAvatar" aria-hidden="true">🎉</div>
@@ -437,6 +474,12 @@
           <div id="galleryMsg" class="msg" role="status"></div>
         </section>
 
+        <section class="pg-sec">
+          <h3>Matching</h3>
+          <div class="switchrow"><input id="discoverable" type="checkbox" checked><label for="discoverable">Suggest me to other students</label></div>
+          <div id="discMsg" class="msg" role="status"></div>
+        </section>
+
         <section class="pg-sec hidden" id="pgBlocks">
           <h3>Blocked students <small id="blockCount"></small></h3>
           <p class="sub" style="margin-bottom:10px">You won't see messages from people you block.</p>
@@ -456,15 +499,19 @@
       </div>
     </div>
 
-    <div id="tabEvents" class="panel hidden">
-      <div id="eventListView">
-        <div class="panel-head"><h2>Events &amp; deals</h2><button type="button" class="pill" id="evPostBtn">＋ Post</button></div>
-        <div class="filters" id="evFilters" role="group" aria-label="Filter by type"></div>
-        <div id="eventList" aria-live="polite"></div>
-        <div id="evListMsg" class="msg" role="status"></div>
-        <p class="small" style="margin-top:8px">Posted by students, not checked by MeetEm'. Meet in public places and never send money to someone you haven't met. Tap Report on anything that looks off.</p>
-      </div>
+    <div id="tabMatches" class="panel">
+      <div class="panel-head"><h2>Your matches</h2></div>
+      <p class="intro">We compare your free times, interests and goals with other students and suggest people you'd click with. Wave 👋 at someone. If they wave back, a private chat opens.</p>
+      <div class="mlist" id="matchList" aria-live="polite"></div>
+      <div id="matchMsg" class="msg" role="status"></div>
+    </div>
 
+    <div id="tabMessages" class="panel hidden">
+      <div id="msgListView">
+        <div class="panel-head"><h2>Messages</h2></div>
+        <div class="clist" id="chatList" aria-live="polite"></div>
+        <div id="chatListMsg" class="msg" role="status"></div>
+      </div>
       <div id="eventChatView" class="hidden">
         <div class="chat-head">
           <button type="button" class="back" id="chatBack" aria-label="Back to events">&larr;</button>
@@ -478,6 +525,17 @@
           <button type="button" class="main" id="chatSend">Send</button>
         </div>
         <div id="chatMsg" class="msg" role="status"></div>
+      </div>
+
+    </div>
+
+    <div id="tabEvents" class="panel hidden">
+      <div id="eventListView">
+        <div class="panel-head"><h2>Events &amp; deals</h2><button type="button" class="pill" id="evPostBtn">＋ Post</button></div>
+        <div class="filters" id="evFilters" role="group" aria-label="Filter by type"></div>
+        <div id="eventList" aria-live="polite"></div>
+        <div id="evListMsg" class="msg" role="status"></div>
+        <p class="small" style="margin-top:8px">Posted by students, not checked by MeetEm'. Meet in public places and never send money to someone you haven't met. Tap Report on anything that looks off.</p>
       </div>
 
       <div id="eventFormView" class="hidden" style="text-align:left">
@@ -516,7 +574,7 @@
 
   </div>
 
-  <p class="small">Matched students see your first name, last initial, photo, year, major and interests. Never your email.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
+  <p class="small">Matched students see your first name, last initial, profile photo, year, major, interests and fun fact. Never your email.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
 </div>
 
 <script>
@@ -899,7 +957,7 @@
     $("authForm").classList.add("hidden");
     $("switchRow").classList.add("hidden");
     $("welcome").classList.remove("hidden");
-    selectTab("Page");
+    selectTab(profile && profile.major ? "Matches" : "Page");
     if (profile && profile.photo_path) { const url = await signedPhoto(profile.photo_path); if (url) showAvatar($("welcomeAvatar"), url, "🎉"); }
   }
 
@@ -927,10 +985,13 @@
 
   /* ---------- tabs ---------- */
   function selectTab(name) {
+    if (name !== "Messages") stopChat();
     document.querySelectorAll("#tabs .tab").forEach((t) => { const on = t.dataset.tab === name; t.classList.toggle("sel", on); t.setAttribute("aria-selected", String(on)); });
     document.querySelectorAll("#welcome .panel").forEach((p) => p.classList.toggle("hidden", p.id !== "tab" + name));
+    if (name === "Matches") loadMatches();
     if (name === "Events") { showEventList(); loadEvents(); }
-    if (name === "Page") { renderGallery(); renderMusic(); loadBlocks(); }
+    if (name === "Messages") { showChatList(); loadChats(); }
+    if (name === "Page") { renderGallery(); renderMusic(); loadBlocks(); renderDiscoverable(); }
     window.scrollTo(0, 0);
   }
   document.querySelectorAll("#tabs .tab").forEach((t) => t.addEventListener("click", () => selectTab(t.dataset.tab)));
@@ -957,13 +1018,13 @@
     EVENT_CATS.forEach(([e, label]) => { const o = el("option", "", e + " " + label); o.value = label; sel.appendChild(o); });
   }
 
-  function showEventList() { stopChat(); $("eventFormView").classList.add("hidden"); $("eventChatView").classList.add("hidden"); $("eventListView").classList.remove("hidden"); }
+  function showEventList() { $("eventFormView").classList.add("hidden"); $("eventListView").classList.remove("hidden"); }
   function showEventForm() {
     ["evTitle", "evWhere", "evPrice", "evDesc", "evLink", "evWhen"].forEach((i) => { $(i).value = ""; });
     $("evAgree").checked = false; evPhotoBlob = null; $("evPhotoName").textContent = "";
     $("evCat").value = EVENT_CATS[0][1]; $("evTicketNote").classList.add("hidden");
     setEvMsg("evFormMsg", "");
-    stopChat(); $("eventListView").classList.add("hidden"); $("eventChatView").classList.add("hidden"); $("eventFormView").classList.remove("hidden");
+    $("eventListView").classList.add("hidden"); $("eventFormView").classList.remove("hidden");
     $("evTitle").focus();
   }
   $("evPostBtn").addEventListener("click", showEventForm);
@@ -1073,7 +1134,7 @@
     const id = ++evLoadId, list = $("eventList");
     list.replaceChildren(el("div", "empty", "Loading…"));
     const since = new Date(Date.now() - 3 * 3600e3).toISOString();
-    let q = db.from("events").select("*").gte("starts_at", since).order("starts_at", { ascending: true }).limit(50);
+    let q = db.from("events").select("*").eq("is_private", false).gte("starts_at", since).order("starts_at", { ascending: true }).limit(50);
     if (eventFilter !== "All") q = q.eq("category", eventFilter);
     const { data, error } = await q;
     if (id !== evLoadId) return;
@@ -1120,14 +1181,17 @@
     chatBase = new Date(e.starts_at).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + (e.location ? " · " + e.location : "");
     $("chatSub").textContent = chatBase;
     $("chatInput").value = ""; setEvMsg("chatMsg", "");
-    $("eventListView").classList.add("hidden"); $("eventFormView").classList.add("hidden"); $("eventChatView").classList.remove("hidden");
+    selectTab("Messages");
+    currentChat = e;   // selectTab clears any previous chat; set it again for this one
+    $("msgListView").classList.add("hidden"); $("eventChatView").classList.remove("hidden");
     window.scrollTo(0, 0);
     await loadMessages(true);
     clearInterval(chatTimer);
     chatTimer = setInterval(() => { if (!document.hidden) loadMessages(false); }, 4000);
   }
   function stopChat() { clearInterval(chatTimer); chatTimer = null; currentChat = null; }
-  function closeChat() { showEventList(); loadEvents(); }
+  function showChatList() { stopChat(); $("eventChatView").classList.add("hidden"); $("msgListView").classList.remove("hidden"); }
+  function closeChat() { showChatList(); loadChats(); }
 
   async function loadMessages(forceScroll) {
     if (!currentChat || chatBusy) return;
@@ -1224,6 +1288,115 @@
     if (!confirm("Unblock everyone you've blocked?")) return;
     await db.from("user_blocks").delete().eq("blocker_id", currentUser.id);
     loadBlocks();
+  });
+
+  /* ---------- matches ---------- */
+  const listText = (a) => (a || []).join(", ");
+  function whyLines(m) {
+    const out = [];
+    if (m.overlap_slots) out.push(["🗓️", "Both free " + listText(m.overlap_days) + " (" + m.overlap_slots + " time block" + (m.overlap_slots === 1 ? "" : "s") + ")"]);
+    if ((m.shared_activities || []).length) out.push(["🎯", "Both into " + listText(m.shared_activities)]);
+    if ((m.shared_goals || []).length) out.push(["🌟", "Same goal: " + listText(m.shared_goals)]);
+    if (m.different_major && ((currentProfile && currentProfile.goals) || []).includes("Meet people outside my major")) out.push(["🌍", "Different major, like you wanted"]);
+    if ((m.shared_likes || []).length) out.push(["💜", "You both like " + listText(m.shared_likes)]);
+    if (m.same_pace && currentProfile && currentProfile.social_level) out.push(["🔥", "Same pace: " + currentProfile.social_level]);
+    if ((m.shared_dislikes || []).length) out.push(["🙅", "Both dislike " + listText(m.shared_dislikes)]);
+    return out;
+  }
+  function matchCard(m, photoUrl) {
+    const card = el("article", "mc" + (m.they_waved && !m.i_waved ? " new" : ""));
+    const top = el("div", "mc-top");
+    const av = el("div", "mc-av"); showAvatar(av, photoUrl, "😊"); top.appendChild(av);
+    const who = el("div", "mc-who");
+    who.appendChild(el("h3", "", (m.first_name || "Student") + (m.last_initial ? " " + m.last_initial + "." : "")));
+    who.appendChild(el("p", "", [m.major, m.year].filter(Boolean).join(" · ")));
+    top.appendChild(who);
+    const pct = el("div", "pct", m.score + "%"); pct.appendChild(el("small", "", "MATCH")); top.appendChild(pct);
+    card.appendChild(top);
+    const why = el("ul", "why"); whyLines(m).forEach(([e, t]) => why.appendChild(el("li", "", e + " " + t)));
+    if (why.children.length) card.appendChild(why);
+    if (m.fun_fact) card.appendChild(el("p", "fact", "✨ " + m.fun_fact));
+    const acts = el("div", "acts");
+    if (m.chat_event_id) {
+      const b = el("button", "chatbtn", "Open chat 💬"); b.type = "button";
+      b.addEventListener("click", () => openChatById(m.chat_event_id)); acts.appendChild(b);
+    } else if (m.i_waved) {
+      acts.appendChild(el("span", "note", "Waved 👋 We'll open a chat if they wave back."));
+    } else {
+      const b = el("button", "chatbtn", m.they_waved ? "Wave back 👋" : "Wave 👋"); b.type = "button";
+      b.addEventListener("click", () => sendWave(m, b)); acts.appendChild(b);
+      if (m.they_waved) acts.appendChild(el("span", "note", (m.first_name || "They") + " waved at you!"));
+    }
+    card.appendChild(acts);
+    return card;
+  }
+  let matchLoadId = 0;
+  async function loadMatches() {
+    const id = ++matchLoadId, list = $("matchList");
+    setEvMsg("matchMsg", "");
+    if (!currentProfile || !currentProfile.major) { list.replaceChildren(el("div", "empty", "Finish your profile and we'll find your matches. Tap Me, then Edit profile.")); return; }
+    list.replaceChildren(el("div", "empty", "Finding your people…"));
+    const { data, error } = await db.rpc("get_matches");
+    if (id !== matchLoadId) return;
+    if (error) { console.error(error); list.replaceChildren(el("div", "empty", "Matching isn't switched on yet. The site owner needs to finish the matching setup in Supabase.")); return; }
+    if (!data || !data.length) { list.replaceChildren(el("div", "empty", "No matches yet. As more students join and share their free times, they'll show up here. Invite a classmate! 🎉")); return; }
+    const urls = {};
+    const paths = data.map((m) => m.photo_path).filter(Boolean);
+    if (paths.length) { try { const r = await db.storage.from("avatars").createSignedUrls(paths, 3600); (r.data || []).forEach((x) => { if (x.signedUrl) urls[x.path] = x.signedUrl; }); } catch (e) { /* photos are optional */ } }
+    if (id !== matchLoadId) return;
+    list.replaceChildren(...data.map((m) => matchCard(m, urls[m.photo_path])));
+  }
+  async function sendWave(m, btn) {
+    btn.disabled = true;
+    const { data, error } = await db.rpc("send_wave", { target: m.id });
+    if (error) { btn.disabled = false; console.error(error); return setEvMsg("matchMsg", /limit/.test(error.message) ? "That's a lot of waves for today. Try again tomorrow." : "Couldn't send that wave. They may no longer be available.", "err"); }
+    if (data) { setEvMsg("matchMsg", "It's a match! Opening your chat 💬", "ok"); openChatById(data); }
+    else { await loadMatches(); setEvMsg("matchMsg", "Waved! 👋 If " + (m.first_name || "they") + " waves back, you'll get a chat.", "ok"); }
+  }
+  async function openChatById(eid) {
+    const { data, error } = await db.from("events").select("*").eq("id", eid).single();
+    if (error || !data) return setEvMsg("matchMsg", "Couldn't open that chat. Try again.", "err");
+    openChat(data);
+  }
+
+  /* ---------- messages list ---------- */
+  async function loadChats() {
+    const list = $("chatList"); setEvMsg("chatListMsg", "");
+    list.replaceChildren(el("div", "empty", "Loading…"));
+    const { data, error } = await db.from("event_members").select("event_id, events(id,title,starts_at,location,is_private,category)").eq("user_id", currentUser.id);
+    if (error) { console.error(error); list.replaceChildren(el("div", "empty", "Messages aren't switched on yet. The site owner needs to finish the chat setup in Supabase.")); return; }
+    const chats = (data || []).map((r) => r.events).filter(Boolean);
+    if (!chats.length) { list.replaceChildren(el("div", "empty", "No chats yet. Join an event or wave at a match to start talking. 💬")); return; }
+    const last = {};
+    try {
+      const r = await db.from("event_messages").select("event_id,body,created_at,sender_name").in("event_id", chats.map((c) => c.id)).order("created_at", { ascending: false }).limit(200);
+      (r.data || []).forEach((m) => { if (!last[m.event_id]) last[m.event_id] = m; });
+    } catch (e) { /* previews are optional */ }
+    chats.sort((a, b) => new Date((last[b.id] || b).created_at || b.starts_at) - new Date((last[a.id] || a).created_at || a.starts_at));
+    list.replaceChildren(...chats.map((c) => {
+      const row = el("button", "chatrow"); row.type = "button";
+      row.appendChild(el("div", "ci", c.is_private ? "👋" : "🎟️"));
+      const tx = el("div", "tx"); tx.appendChild(el("h3", "", c.title));
+      const l = last[c.id];
+      tx.appendChild(el("p", "", l ? (l.sender_name ? l.sender_name.split(" ")[0] + ": " : "") + l.body : (c.is_private ? "Say hi! 👋" : "No messages yet")));
+      row.appendChild(tx);
+      row.addEventListener("click", () => openChat(c));
+      return row;
+    }));
+  }
+
+  /* ---------- matching on/off (My page) ---------- */
+  function renderDiscoverable() {
+    $("discoverable").checked = !(currentProfile && currentProfile.discoverable === false);
+    $("discoverable").disabled = !currentProfile || !currentProfile.major;
+    setEvMsg("discMsg", "");
+  }
+  $("discoverable").addEventListener("change", async () => {
+    const on = $("discoverable").checked;
+    const { error } = await db.from("profiles").update({ discoverable: on }).eq("id", currentUser.id);
+    if (error) { $("discoverable").checked = !on; return setEvMsg("discMsg", "Matching isn't switched on yet. The site owner needs to finish the matching setup in Supabase.", "err"); }
+    currentProfile = Object.assign({}, currentProfile, { discoverable: on });
+    setEvMsg("discMsg", on ? "You'll show up in other students' matches." : "You're hidden from matches. Students you already waved at can still chat with you.", "ok");
   });
 
   /* ---------- gallery ---------- */
