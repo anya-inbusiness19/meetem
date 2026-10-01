@@ -20,12 +20,10 @@
   h1 .ap { color:var(--pop); }
   .tag { margin:4px 0 18px; color:var(--muted); font-size:15px; }
 
-  /* progress */
   .progress { height:8px; background:var(--tint); border-radius:99px; overflow:hidden; }
   #bar { height:100%; width:0; background:linear-gradient(90deg,var(--brand),var(--pop)); border-radius:99px; transition:width .35s ease; }
   .step-label { font-size:12px; color:var(--muted); margin:8px 0 14px; min-height:16px; }
 
-  /* steps */
   #stage { overflow:hidden; padding:4px; margin:-4px; }
   .step { display:none; }
   .step.active { display:block; }
@@ -49,6 +47,27 @@
   .opt:active { transform:scale(.98); }
   .opt.sel { border-color:var(--brand); background:var(--tint); }
 
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { min-height:44px; padding:10px 14px; font-size:16px; font-weight:600; color:var(--text); background:#fff; border:1.5px solid var(--line); border-radius:99px; cursor:pointer; transition:border-color .15s, background .15s, transform .1s; }
+  .chip:active { transform:scale(.97); }
+  .chip.sel { border-color:var(--brand); background:var(--tint); color:var(--brand-dark); }
+  .addrow { display:flex; gap:8px; margin-top:14px; }
+  .addrow input { flex:1; min-width:0; }
+  .addbtn { padding:0 18px; font-size:16px; font-weight:700; color:var(--brand); background:var(--tint); border:0; border-radius:12px; cursor:pointer; }
+
+  .times { display:grid; grid-template-columns:44px repeat(4, 1fr); gap:6px; align-items:center; }
+  .times .h { text-align:center; font-size:11px; color:var(--muted); line-height:1.2; }
+  .times .h b { display:block; font-size:18px; font-weight:400; }
+  .times .d { font-size:13px; font-weight:700; }
+  .slot { height:44px; font-size:18px; color:#fff; background:#fff; border:1.5px solid var(--line); border-radius:10px; cursor:pointer; }
+  .slot.sel { background:var(--brand); border-color:var(--brand); }
+
+  .photo-wrap { display:flex; align-items:center; gap:16px; }
+  .avatar { width:96px; height:96px; flex:none; border-radius:50%; background:var(--tint); display:flex; align-items:center; justify-content:center; font-size:44px; overflow:hidden; border:3px solid #fff; box-shadow:0 0 0 2px var(--line); }
+  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-btns { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+  .row2 { display:grid; grid-template-columns:90px 1fr; gap:10px; }
+
   .showpw { margin-top:10px; font-size:14px; color:var(--brand); font-weight:600; background:none; border:0; padding:8px 0; cursor:pointer; }
   .check { display:flex; gap:12px; align-items:center; margin-top:6px; padding:14px; border:1.5px solid var(--line); border-radius:14px; font-size:16px; }
   .check input { width:22px; height:22px; flex:none; accent-color:var(--brand); }
@@ -59,14 +78,20 @@
   button.main:active { background:var(--brand-dark); }
   button.main:disabled { opacity:.6; }
   button.back { padding:15px 18px; font-size:16px; font-weight:600; color:var(--brand); background:var(--tint); border:0; border-radius:12px; cursor:pointer; }
+  button.ghost { width:100%; margin-top:10px; padding:14px; font-size:16px; font-weight:600; color:var(--brand); background:var(--tint); border:0; border-radius:12px; cursor:pointer; }
   .hidden { display:none !important; }
   .msg { margin-top:12px; font-size:14px; min-height:20px; line-height:1.4; }
   .msg.err { color:var(--err); } .msg.ok { color:var(--ok); }
   .switch { text-align:center; margin-top:16px; font-size:14px; color:var(--muted); }
   .switch a { color:var(--brand); font-weight:600; text-decoration:none; cursor:pointer; }
-  .welcome .emoji { font-size:60px; }
-  .welcome h2 { margin:0 0 8px; }
-  .welcome p { color:var(--muted); line-height:1.5; }
+
+  .welcome { text-align:center; }
+  .welcome .avatar { margin:4px auto 12px; width:104px; height:104px; }
+  .welcome h2 { margin:0 0 6px; }
+  .welcome p { color:var(--muted); line-height:1.5; margin:0 0 14px; }
+  .summary { text-align:left; background:var(--bg); border-radius:14px; padding:12px 14px; margin:0 0 14px; font-size:14px; line-height:1.5; }
+  .summary div { margin:4px 0; }
+  .summary b { color:var(--brand-dark); }
   .small { font-size:12px; color:var(--muted); margin-top:20px; text-align:center; line-height:1.5; }
   .small a { color:var(--brand); }
 
@@ -88,52 +113,48 @@
     </div>
 
     <div id="stage">
-      <!-- 1 name -->
+      <!-- ============ SIGN-UP ============ -->
       <section class="step" data-step="name">
-        <span class="emoji" aria-hidden="true">&#128075;</span>
+        <span class="emoji" aria-hidden="true">👋</span>
         <h2 class="q">Hey! What's your first name?</h2>
         <p class="sub">This is the name other students will see.</p>
         <label for="name">First name</label>
         <input id="name" type="text" autocomplete="given-name" maxlength="30" placeholder="Your first name">
       </section>
 
-      <!-- 2 year -->
       <section class="step" data-step="year">
-        <span class="emoji" aria-hidden="true">&#127891;</span>
+        <span class="emoji" aria-hidden="true">🎓</span>
         <h2 class="q" id="yearQ">What year are you?</h2>
         <p class="sub">Tap one to keep going.</p>
         <div class="options" role="group" aria-label="Year in school">
-          <button type="button" class="opt" data-field="year" data-value="Freshman"><span class="e" aria-hidden="true">&#127793;</span>Freshman</button>
-          <button type="button" class="opt" data-field="year" data-value="Sophomore"><span class="e" aria-hidden="true">&#128216;</span>Sophomore</button>
-          <button type="button" class="opt" data-field="year" data-value="Transfer"><span class="e" aria-hidden="true">&#128260;</span>Transfer</button>
-          <button type="button" class="opt" data-field="year" data-value="Junior or senior"><span class="e" aria-hidden="true">&#127775;</span>Junior or senior</button>
-          <button type="button" class="opt" data-field="year" data-value="Other"><span class="e" aria-hidden="true">&#10024;</span>Other</button>
+          <button type="button" class="opt" data-field="year" data-value="Freshman"><span class="e" aria-hidden="true">🌱</span>Freshman</button>
+          <button type="button" class="opt" data-field="year" data-value="Sophomore"><span class="e" aria-hidden="true">📘</span>Sophomore</button>
+          <button type="button" class="opt" data-field="year" data-value="Transfer"><span class="e" aria-hidden="true">🔄</span>Transfer</button>
+          <button type="button" class="opt" data-field="year" data-value="Junior or senior"><span class="e" aria-hidden="true">🌟</span>Junior or senior</button>
+          <button type="button" class="opt" data-field="year" data-value="Other"><span class="e" aria-hidden="true">✨</span>Other</button>
         </div>
       </section>
 
-      <!-- 3 commute -->
       <section class="step" data-step="commute">
-        <span class="emoji" aria-hidden="true">&#128652;</span>
+        <span class="emoji" aria-hidden="true">🚌</span>
         <h2 class="q">How do you get to campus?</h2>
         <p class="sub">This helps us find meetups that fit your day.</p>
         <div class="options" role="group" aria-label="Commute or on campus">
-          <button type="button" class="opt" data-field="commute" data-value="I commute"><span class="e" aria-hidden="true">&#128663;</span>I commute</button>
-          <button type="button" class="opt" data-field="commute" data-value="I live on campus"><span class="e" aria-hidden="true">&#127968;</span>I live on campus</button>
+          <button type="button" class="opt" data-field="commute" data-value="I commute"><span class="e" aria-hidden="true">🚗</span>I commute</button>
+          <button type="button" class="opt" data-field="commute" data-value="I live on campus"><span class="e" aria-hidden="true">🏠</span>I live on campus</button>
         </div>
       </section>
 
-      <!-- 4 email -->
       <section class="step" data-step="email">
-        <span class="emoji" aria-hidden="true">&#128231;</span>
+        <span class="emoji" aria-hidden="true">📧</span>
         <h2 class="q">What's your school email?</h2>
         <p class="sub">It has to end in .edu. It keeps MeetEm' students-only.</p>
         <label for="email">School email</label>
         <input id="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" placeholder="you@school.edu">
       </section>
 
-      <!-- 5 password -->
       <section class="step" data-step="password">
-        <span class="emoji" aria-hidden="true">&#128274;</span>
+        <span class="emoji" aria-hidden="true">🔒</span>
         <h2 class="q">Create a password</h2>
         <p class="sub">At least 8 characters.</p>
         <label for="password">Password</label>
@@ -141,9 +162,8 @@
         <button type="button" class="showpw" id="showPw">Show password</button>
       </section>
 
-      <!-- 6 age -->
       <section class="step" data-step="age">
-        <span class="emoji" aria-hidden="true">&#127881;</span>
+        <span class="emoji" aria-hidden="true">🎉</span>
         <h2 class="q">Last thing!</h2>
         <p class="sub">MeetEm' is for students 18 and older.</p>
         <div class="check">
@@ -152,23 +172,127 @@
         </div>
       </section>
 
-      <!-- sent -->
       <section class="step" data-step="sent">
-        <span class="emoji" aria-hidden="true">&#128236;</span>
+        <span class="emoji" aria-hidden="true">📬</span>
         <h2 class="q">Check your email!</h2>
         <p class="sub">We sent a confirmation link to your school email. Tap it, then come back here and sign in. Check spam if you don't see it.</p>
         <button type="button" class="main" id="toSignin" style="width:100%">Go to sign in</button>
       </section>
 
-      <!-- sign in -->
       <section class="step" data-step="signin">
-        <span class="emoji" aria-hidden="true">&#128591;</span>
+        <span class="emoji" aria-hidden="true">🙏</span>
         <h2 class="q">Welcome back!</h2>
         <p class="sub">Sign in to pick up where you left off.</p>
         <label for="siEmail">School email</label>
         <input id="siEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" placeholder="you@school.edu">
         <label for="siPassword">Password</label>
         <input id="siPassword" type="password" autocomplete="current-password" placeholder="Your password">
+      </section>
+
+      <!-- ============ PROFILE ============ -->
+      <section class="step" data-step="major">
+        <span class="emoji" aria-hidden="true">📚</span>
+        <h2 class="q">What's your major or program?</h2>
+        <p class="sub">Not sure yet? Type "Undecided".</p>
+        <label for="major">Major or program</label>
+        <input id="major" type="text" list="majors" maxlength="80" autocomplete="off" placeholder="Business Administration">
+        <datalist id="majors">
+          <option value="Business Administration"></option>
+          <option value="Nursing"></option>
+          <option value="Computer Science"></option>
+          <option value="Engineering"></option>
+          <option value="Education"></option>
+          <option value="Psychology"></option>
+          <option value="Biology"></option>
+          <option value="Criminal Justice"></option>
+          <option value="Art and Design"></option>
+          <option value="Undecided"></option>
+        </datalist>
+      </section>
+
+      <section class="step" data-step="times">
+        <span class="emoji" aria-hidden="true">🗓️</span>
+        <h2 class="q">When are you free?</h2>
+        <p class="sub">Tap the times you're usually free between classes. We use this to match you.</p>
+        <div class="times" id="timesGrid"></div>
+      </section>
+
+      <section class="step" data-step="doing">
+        <span class="emoji" aria-hidden="true">🎯</span>
+        <h2 class="q">What do you want to do with others?</h2>
+        <p class="sub">Pick as many as you like.</p>
+        <div class="chips" id="chipsDoing"></div>
+      </section>
+
+      <section class="step" data-step="goals">
+        <span class="emoji" aria-hidden="true">🌟</span>
+        <h2 class="q">What's your goal?</h2>
+        <p class="sub">Pick as many as you like.</p>
+        <div class="chips" id="chipsGoals"></div>
+      </section>
+
+      <section class="step" data-step="pace">
+        <span class="emoji" aria-hidden="true">🔥</span>
+        <h2 class="q">How social do you want to be?</h2>
+        <p class="sub">You can change this anytime.</p>
+        <div class="options" role="group" aria-label="How often">
+          <button type="button" class="opt" data-field="pace" data-value="1-2 meetups a month"><span class="e" aria-hidden="true">🌱</span>1-2 meetups a month</button>
+          <button type="button" class="opt" data-field="pace" data-value="Weekly"><span class="e" aria-hidden="true">📅</span>Weekly</button>
+          <button type="button" class="opt" data-field="pace" data-value="More"><span class="e" aria-hidden="true">🚀</span>More, bring it on</button>
+        </div>
+      </section>
+
+      <section class="step" data-step="photo">
+        <span class="emoji" aria-hidden="true">📸</span>
+        <h2 class="q">Add a profile photo</h2>
+        <p class="sub">Optional. A clear photo of your face helps people recognize you at a meetup.</p>
+        <div class="photo-wrap">
+          <div class="avatar" id="photoPrev" aria-hidden="true">😊</div>
+          <div class="photo-btns">
+            <button type="button" class="back" id="photoBtn">Choose photo 📷</button>
+            <button type="button" class="showpw" id="photoClear">Remove photo</button>
+          </div>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" class="hidden" aria-label="Choose a profile photo">
+      </section>
+
+      <section class="step" data-step="about">
+        <span class="emoji" aria-hidden="true">🙋</span>
+        <h2 class="q">A little about you</h2>
+        <p class="sub">Both are optional.</p>
+        <div class="row2">
+          <div>
+            <label for="lastInitial">Last initial</label>
+            <input id="lastInitial" type="text" maxlength="1" autocomplete="off" autocapitalize="characters" placeholder="H">
+          </div>
+          <div>
+            <label for="funFact">A fun fact about me</label>
+            <input id="funFact" type="text" maxlength="120" autocomplete="off" placeholder="I can draw anything">
+          </div>
+        </div>
+        <p class="sub" style="margin-top:12px">Keep it light. Please don't add phone numbers or social handles.</p>
+      </section>
+
+      <section class="step" data-step="likes">
+        <span class="emoji" aria-hidden="true">💜</span>
+        <h2 class="q">What do you like?</h2>
+        <p class="sub">Tap some, or add your own.</p>
+        <div class="chips" id="chipsLikes"></div>
+        <div class="addrow">
+          <input id="likesCustom" type="text" maxlength="24" autocomplete="off" placeholder="Add your own">
+          <button type="button" class="addbtn" data-group="likes">Add</button>
+        </div>
+      </section>
+
+      <section class="step" data-step="dislikes">
+        <span class="emoji" aria-hidden="true">🙅</span>
+        <h2 class="q">What don't you like?</h2>
+        <p class="sub">Just for fun, and for better matches.</p>
+        <div class="chips" id="chipsDislikes"></div>
+        <div class="addrow">
+          <input id="dislikesCustom" type="text" maxlength="24" autocomplete="off" placeholder="Add your own">
+          <button type="button" class="addbtn" data-group="dislikes">Add</button>
+        </div>
       </section>
     </div>
 
@@ -181,15 +305,17 @@
 
   <p id="switchRow" class="switch">Already have an account? <a id="toggle" role="button" tabindex="0">Sign in</a></p>
 
-  <!-- Shown after sign in -->
+  <!-- Shown once signed in with a finished profile -->
   <div id="welcome" class="welcome hidden">
-    <span class="emoji" aria-hidden="true">&#127881;</span>
+    <div class="avatar" id="welcomeAvatar" aria-hidden="true">🎉</div>
     <h2 id="welcomeTitle">Welcome!</h2>
-    <p>You're in. Next we'll add class times and small-group meetups. For now, you're on the list.</p>
-    <button id="signOutBtn" class="main" type="button" style="width:100%">Sign out</button>
+    <p id="welcomeText">You're in. Matching with other students is coming soon.</p>
+    <div id="summary" class="summary hidden"></div>
+    <button id="editBtn" class="main" type="button" style="width:100%">Edit my profile ✏️</button>
+    <button id="signOutBtn" class="ghost" type="button">Sign out</button>
   </div>
 
-  <p class="small">Only first name, year and major are shown to other students.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
+  <p class="small">Matched students see your first name, last initial, photo, year, major and interests. Never your email.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
 </div>
 
 <script>
@@ -199,15 +325,38 @@
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const $ = (id) => document.getElementById(id);
-  const STEPS = ["name", "year", "commute", "email", "password", "age"];
-  const OPTION_STEPS = ["year", "commute"];
-  const answers = { year: "", commute: "" };
-  let mode = "signup";   // "signup" | "signin"
+  const FLOWS = {
+    signup: ["name", "year", "commute", "email", "password", "age"],
+    profile: ["major", "times", "doing", "goals", "pace", "photo", "about", "likes", "dislikes"]
+  };
+  const OPTION_STEPS = ["year", "commute", "pace"];   // tap one, slide on
+  const answers = { year: "", commute: "", pace: "" };
+
+  const DAYS = [["Mon", "Monday"], ["Tue", "Tuesday"], ["Wed", "Wednesday"], ["Thu", "Thursday"], ["Fri", "Friday"], ["Sat", "Saturday"], ["Sun", "Sunday"]];
+  const BLOCKS = [["Morning", "8-11", "☀️"], ["Midday", "11-2", "🌤️"], ["Afternoon", "2-5", "🌇"], ["Evening", "5+", "🌙"]];
+  const times = {};   // { Mon: Set("Morning", ...), ... }
+
+  const GROUPS = {
+    doing: { el: "chipsDoing", set: new Set(), custom: false, presets: [["☕", "Coffee"], ["📚", "Study"], ["🚶", "Walks"], ["🎯", "Clubs"], ["🍕", "Food"], ["🎮", "Games"]] },
+    goals: { el: "chipsGoals", set: new Set(), custom: false, presets: [["🤝", "Make friends"], ["📖", "Find a study group"], ["🌍", "Meet people outside my major"]] },
+    likes: { el: "chipsLikes", set: new Set(), custom: true, presets: [["🐶", "Animals"], ["🍎", "Apple products"], ["🎵", "Music"], ["🎮", "Gaming"], ["🎬", "Movies"], ["📚", "Reading"], ["💪", "Fitness"], ["🎨", "Art"], ["🍕", "Food"], ["✈️", "Travel"], ["🏈", "Sports"], ["💻", "Tech"]] },
+    dislikes: { el: "chipsDislikes", set: new Set(), custom: true, presets: [["🌅", "Early mornings"], ["🔊", "Loud places"], ["⏰", "Running late"], ["🥶", "Cold weather"], ["🚗", "Traffic"], ["📞", "Phone calls"], ["🌶️", "Spicy food"], ["🍄", "Mushrooms"]] }
+  };
+
+  let mode = "signup";    // "signup" | "signin" | "profile"
+  let flow = "signup";
   let idx = 0;
   let current = "name";
+  let currentUser = null;
+  let currentProfile = null;
+  let photoBlob = null;       // a newly chosen photo, not yet uploaded
+  let photoRemoved = false;
+  let existingPhotoPath = null;
 
   function setMsg(text, type) { const m = $("msg"); m.textContent = text || ""; m.className = "msg " + (type || ""); }
+  const steps = () => FLOWS[flow] || [];
 
+  /* ---------- step engine ---------- */
   function render(key, dir) {
     current = key;
     document.querySelectorAll(".step").forEach((s) => {
@@ -217,40 +366,42 @@
       if (on && dir) s.classList.add(dir > 0 ? "in-right" : "in-left");
     });
 
-    const isFlow = STEPS.includes(key);
+    const list = steps();
+    const isFlow = list.includes(key);
     $("progressWrap").classList.toggle("hidden", !isFlow);
     if (isFlow) {
-      $("bar").style.width = ((idx + 1) / STEPS.length * 100) + "%";
-      $("stepLabel").textContent = "Step " + (idx + 1) + " of " + STEPS.length;
+      $("bar").style.width = ((idx + 1) / list.length * 100) + "%";
+      $("stepLabel").textContent = (flow === "profile" ? "Your profile · " : "") + "Step " + (idx + 1) + " of " + list.length;
     }
 
     const isOption = OPTION_STEPS.includes(key);
-    const isSent = key === "sent";
-    $("actions").classList.toggle("hidden", isSent);
+    $("actions").classList.toggle("hidden", key === "sent");
     $("backBtn").classList.toggle("hidden", !(isFlow && idx > 0));
     $("nextBtn").classList.toggle("hidden", isOption);
-    $("nextBtn").textContent = key === "age" ? "Create account \u{1F680}" : key === "signin" ? "Sign in" : "Continue";
+    $("nextBtn").textContent = key === "age" ? "Create account 🚀" : key === "dislikes" ? "Save my profile ✅" : key === "signin" ? "Sign in" : "Continue";
 
-    // Focus the first field on text steps (not on tap-to-choose steps)
-    const active = document.querySelector('.step.active input[type=text], .step.active input[type=email], .step.active input[type=password]');
-    if (active && dir !== 0) setTimeout(() => active.focus({ preventScroll: true }), 380);
+    const f = document.querySelector('.step.active input[type=text], .step.active input[type=email], .step.active input[type=password]');
+    if (f && dir !== 0 && key !== "likes" && key !== "dislikes") setTimeout(() => f.focus({ preventScroll: true }), 380);
   }
 
   function go(delta) {
-    idx = Math.max(0, Math.min(STEPS.length - 1, idx + delta));
+    idx = Math.max(0, Math.min(steps().length - 1, idx + delta));
     setMsg("");
-    render(STEPS[idx], delta);
+    render(steps()[idx], delta);
   }
 
   function setMode(next) {
     mode = next;
+    flow = "signup";
     const signup = mode === "signup";
+    $("switchRow").classList.remove("hidden");
     $("switchRow").innerHTML = signup
       ? 'Already have an account? <a id="toggle" role="button" tabindex="0">Sign in</a>'
       : 'New here? <a id="toggle" role="button" tabindex="0">Create account</a>';
     bindToggle();
     setMsg("");
-    if (signup) render(STEPS[idx], 0); else render("signin", 1);
+    if (signup) { idx = Math.min(idx, FLOWS.signup.length - 1); render(FLOWS.signup[idx], 0); }
+    else render("signin", 1);
   }
 
   function bindToggle() {
@@ -260,81 +411,171 @@
     t.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } };
   }
 
-  function showWelcome(user) {
-    const name = (user.user_metadata && user.user_metadata.first_name) || "there";
-    $("welcomeTitle").textContent = "Welcome, " + name + "!";
-    $("authForm").classList.add("hidden");
-    $("switchRow").classList.add("hidden");
-    $("welcome").classList.remove("hidden");
+  /* ---------- option cards (year, commute, pace) ---------- */
+  function syncOptions() {
+    document.querySelectorAll(".opt").forEach((b) => b.classList.toggle("sel", answers[b.dataset.field] === b.dataset.value));
   }
-
-  function showForm() {
-    $("welcome").classList.add("hidden");
-    $("authForm").classList.remove("hidden");
-    $("switchRow").classList.remove("hidden");
-    setMode("signin");
-  }
-
-  function validate(key) {
-    if (key === "name") {
-      if (!$("name").value.trim()) { setMsg("Please enter your first name.", "err"); return false; }
-    } else if (key === "email") {
-      const email = $("email").value.trim().toLowerCase();
-      if (!/^[^@\s]+@[^@\s]+\.edu$/.test(email)) { setMsg("Please use your school email ending in .edu.", "err"); return false; }
-    } else if (key === "password") {
-      if ($("password").value.length < 8) { setMsg("Password must be at least 8 characters.", "err"); return false; }
-    } else if (key === "age") {
-      if (!$("age").checked) { setMsg("You must be 18 or older to join.", "err"); return false; }
-    }
-    return true;
-  }
-
-  // Tap-to-choose steps: pick, then slide on
   document.querySelectorAll(".opt").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const field = btn.dataset.field;
-      answers[field] = btn.dataset.value;
+      answers[btn.dataset.field] = btn.dataset.value;
       btn.parentElement.querySelectorAll(".opt").forEach((b) => b.classList.toggle("sel", b === btn));
       setMsg("");
       setTimeout(() => go(1), 250);
     });
   });
 
+  /* ---------- chips ---------- */
+  function makeChip(group, emoji, label) {
+    const g = GROUPS[group];
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.dataset.value = label;
+    b.textContent = (emoji ? emoji + " " : "") + label;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => {
+      if (g.set.has(label)) g.set.delete(label); else g.set.add(label);
+      const on = g.set.has(label);
+      b.classList.toggle("sel", on);
+      b.setAttribute("aria-pressed", String(on));
+      if (!on && !g.presets.some((p) => p[1] === label)) b.remove();   // custom chips disappear when unselected
+    });
+    $(g.el).appendChild(b);
+    return b;
+  }
+  function buildChips() {
+    Object.keys(GROUPS).forEach((k) => { $(GROUPS[k].el).replaceChildren(); GROUPS[k].presets.forEach((p) => makeChip(k, p[0], p[1])); });
+  }
+  function syncChips() {
+    Object.keys(GROUPS).forEach((k) => {
+      const g = GROUPS[k];
+      g.set.forEach((val) => { if (!$(g.el).querySelector('[data-value="' + CSS.escape(val) + '"]')) makeChip(k, "", val); });
+      $(g.el).querySelectorAll(".chip").forEach((c) => { const on = g.set.has(c.dataset.value); c.classList.toggle("sel", on); c.setAttribute("aria-pressed", String(on)); });
+    });
+  }
+  function addCustom(group) {
+    const g = GROUPS[group];
+    const input = $(group + "Custom");
+    const val = input.value.trim().replace(/\s+/g, " ");
+    if (!val) return;
+    const dupe = [...g.set].some((v) => v.toLowerCase() === val.toLowerCase()) || g.presets.some((p) => p[1].toLowerCase() === val.toLowerCase());
+    if (dupe) { setMsg("You already have that one.", "err"); return; }
+    const customCount = [...g.set].filter((v) => !g.presets.some((p) => p[1] === v)).length;
+    if (customCount >= 5) { setMsg("That's 5 of your own. Remove one to add another.", "err"); return; }
+    g.set.add(val);
+    const chip = makeChip(group, "", val);
+    chip.classList.add("sel"); chip.setAttribute("aria-pressed", "true");
+    input.value = "";
+    setMsg("");
+  }
+  document.querySelectorAll(".addbtn").forEach((b) => b.addEventListener("click", () => addCustom(b.dataset.group)));
+  ["likes", "dislikes"].forEach((k) => $(k + "Custom").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(k); } }));
+
+  /* ---------- free times grid ---------- */
+  function buildTimes() {
+    const grid = $("timesGrid");
+    grid.replaceChildren();
+    grid.appendChild(document.createElement("div"));
+    BLOCKS.forEach((b) => {
+      const h = document.createElement("div");
+      h.className = "h";
+      const e = document.createElement("b"); e.textContent = b[2]; e.setAttribute("aria-hidden", "true");
+      h.append(e, document.createTextNode(b[0]), document.createElement("br"), document.createTextNode(b[1]));
+      grid.appendChild(h);
+    });
+    DAYS.forEach(([short, long]) => {
+      const d = document.createElement("div"); d.className = "d"; d.textContent = short; grid.appendChild(d);
+      BLOCKS.forEach((b) => {
+        const s = document.createElement("button");
+        s.type = "button"; s.className = "slot"; s.dataset.day = short; s.dataset.block = b[0];
+        s.setAttribute("aria-label", long + " " + b[0] + " " + b[1]); s.setAttribute("aria-pressed", "false");
+        s.textContent = "✓";
+        s.addEventListener("click", () => {
+          const set = times[short] || (times[short] = new Set());
+          if (set.has(b[0])) set.delete(b[0]); else set.add(b[0]);
+          const on = set.has(b[0]);
+          s.classList.toggle("sel", on); s.setAttribute("aria-pressed", String(on));
+        });
+        grid.appendChild(s);
+      });
+    });
+  }
+  function syncTimes() {
+    $("timesGrid").querySelectorAll(".slot").forEach((s) => {
+      const on = !!(times[s.dataset.day] && times[s.dataset.day].has(s.dataset.block));
+      s.classList.toggle("sel", on); s.setAttribute("aria-pressed", String(on));
+    });
+  }
+  const timesCount = () => Object.values(times).reduce((n, s) => n + s.size, 0);
+  const timesToObject = () => { const o = {}; DAYS.forEach(([d]) => { if (times[d] && times[d].size) o[d] = BLOCKS.map((b) => b[0]).filter((b) => times[d].has(b)); }); return o; };
+
+  /* ---------- photo ---------- */
+  function showAvatar(el, url, fallback) {
+    el.replaceChildren();
+    if (url) { const i = document.createElement("img"); i.src = url; i.alt = ""; el.appendChild(i); }
+    else el.textContent = fallback;
+  }
+  async function processPhoto(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image(); img.src = url; await img.decode();
+      const s = Math.min(img.naturalWidth, img.naturalHeight);
+      const c = document.createElement("canvas"); c.width = c.height = 512;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, 512, 512);   // square crop; re-encoding also strips location data
+      return await new Promise((res) => c.toBlob(res, "image/jpeg", 0.85));
+    } finally { URL.revokeObjectURL(url); }
+  }
+  $("photoBtn").addEventListener("click", () => $("photoInput").click());
+  $("photoInput").addEventListener("change", async () => {
+    const file = $("photoInput").files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setMsg("Please choose an image.", "err");
+    try {
+      setMsg("");
+      photoBlob = await processPhoto(file); photoRemoved = false;
+      showAvatar($("photoPrev"), URL.createObjectURL(photoBlob), "😊");
+    } catch (e) { setMsg("Sorry, that photo didn't load. Try a different one.", "err"); }
+    $("photoInput").value = "";
+  });
+  $("photoClear").addEventListener("click", () => { photoBlob = null; photoRemoved = true; showAvatar($("photoPrev"), null, "😊"); });
+
+  /* ---------- sign-up / sign-in ---------- */
   $("name").addEventListener("input", () => {
     const n = $("name").value.trim();
     $("yearQ").textContent = n ? "Nice to meet you, " + n + "! What year are you?" : "What year are you?";
   });
-
   $("showPw").addEventListener("click", () => {
-    const p = $("password");
-    const show = p.type === "password";
-    p.type = show ? "text" : "password";
-    $("showPw").textContent = show ? "Hide password" : "Show password";
+    const p = $("password"); const show = p.type === "password";
+    p.type = show ? "text" : "password"; $("showPw").textContent = show ? "Hide password" : "Show password";
   });
-
   $("backBtn").addEventListener("click", () => go(-1));
   $("toSignin").addEventListener("click", () => { $("siEmail").value = $("email").value; setMode("signin"); });
 
+  function validate(key) {
+    if (key === "name") { if (!$("name").value.trim()) return setMsg("Please enter your first name.", "err"), false; }
+    else if (key === "email") { if (!/^[^@\s]+@[^@\s]+\.edu$/.test($("email").value.trim().toLowerCase())) return setMsg("Please use your school email ending in .edu.", "err"), false; }
+    else if (key === "password") { if ($("password").value.length < 8) return setMsg("Password must be at least 8 characters.", "err"), false; }
+    else if (key === "age") { if (!$("age").checked) return setMsg("You must be 18 or older to join.", "err"), false; }
+    else if (key === "major") { if (!$("major").value.trim()) return setMsg("Please enter your major, or type Undecided.", "err"), false; }
+    else if (key === "times") { if (timesCount() < 1) return setMsg("Tap at least one time you're usually free.", "err"), false; }
+    else if (key === "doing") { if (GROUPS.doing.set.size < 1) return setMsg("Pick at least one.", "err"), false; }
+    else if (key === "goals") { if (GROUPS.goals.set.size < 1) return setMsg("Pick at least one.", "err"), false; }
+    else if (key === "about") { const v = $("lastInitial").value.trim(); if (v && !/^[A-Za-z]$/.test(v)) return setMsg("Last initial should be one letter.", "err"), false; }
+    return true;
+  }
+
   async function doSignUp() {
-    const email = $("email").value.trim().toLowerCase();
-    const first_name = $("name").value.trim();
-    if (!answers.year || !answers.commute) { setMsg("Please go back and choose your year and how you get to campus.", "err"); return; }
+    if (!answers.year || !answers.commute) return setMsg("Please go back and choose your year and how you get to campus.", "err");
     $("nextBtn").disabled = true;
     try {
       const { data, error } = await db.auth.signUp({
-        email,
+        email: $("email").value.trim().toLowerCase(),
         password: $("password").value,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: { first_name, year: answers.year, commute: answers.commute }
-        }
+        options: { emailRedirectTo: window.location.origin, data: { first_name: $("name").value.trim(), year: answers.year, commute: answers.commute } }
       });
       if (error) return setMsg(error.message, "err");
-      if (data.session) showWelcome(data.user);
-      else render("sent", 1);
-    } finally {
-      $("nextBtn").disabled = false;
-    }
+      if (data.session) afterLogin(data.user); else render("sent", 1);
+    } finally { $("nextBtn").disabled = false; }
   }
 
   async function doSignIn() {
@@ -346,10 +587,120 @@
     try {
       const { data, error } = await db.auth.signInWithPassword({ email, password });
       if (error) return setMsg(error.message, "err");
-      showWelcome(data.user);
-    } finally {
-      $("nextBtn").disabled = false;
+      afterLogin(data.user);
+    } finally { $("nextBtn").disabled = false; }
+  }
+
+  /* ---------- after login: profile or welcome ---------- */
+  async function afterLogin(user) {
+    currentUser = user;
+    const { data, error } = await db.from("profiles").select("*").eq("id", user.id).maybeSingle();
+    if (error) { console.error(error); currentProfile = null; showWelcome(null, "Profiles aren't switched on yet. The site owner needs to finish the Supabase setup."); return; }
+    currentProfile = data;
+    if (!data || !data.major) startProfile(); else showWelcome(data);
+  }
+
+  function resetProfileForm() {
+    $("major").value = ""; $("lastInitial").value = ""; $("funFact").value = "";
+    Object.keys(times).forEach((k) => delete times[k]);
+    Object.values(GROUPS).forEach((g) => g.set.clear());
+    answers.pace = ""; photoBlob = null; photoRemoved = false; existingPhotoPath = null;
+    buildChips(); buildTimes(); showAvatar($("photoPrev"), null, "😊");
+  }
+
+  async function startProfile() {
+    resetProfileForm();
+    const p = currentProfile;
+    if (p) {
+      $("major").value = p.major || ""; $("lastInitial").value = p.last_initial || ""; $("funFact").value = p.fun_fact || "";
+      Object.entries(p.free_times || {}).forEach(([d, arr]) => { times[d] = new Set(arr); });
+      GROUPS.doing.set = new Set(p.activities || []); GROUPS.goals.set = new Set(p.goals || []);
+      GROUPS.likes.set = new Set(p.likes || []); GROUPS.dislikes.set = new Set(p.dislikes || []);
+      answers.pace = p.social_level || ""; existingPhotoPath = p.photo_path || null;
+      syncChips(); syncTimes();
+      if (existingPhotoPath) { const url = await signedPhoto(existingPhotoPath); if (url) showAvatar($("photoPrev"), url, "😊"); }
     }
+    syncOptions();
+    mode = "profile"; flow = "profile"; idx = 0; setMsg("");
+    $("welcome").classList.add("hidden");
+    $("authForm").classList.remove("hidden");
+    $("switchRow").classList.add("hidden");
+    render("major", 1);
+  }
+
+  async function signedPhoto(path) {
+    try { const { data } = await db.storage.from("avatars").createSignedUrl(path, 3600); return data && data.signedUrl; } catch (e) { return null; }
+  }
+
+  async function saveProfile() {
+    $("nextBtn").disabled = true;
+    setMsg("Saving…", "ok");
+    try {
+      const uid = currentUser.id;
+      const meta = currentUser.user_metadata || {};
+      let photo_path = existingPhotoPath;
+      if (photoRemoved) photo_path = null;
+      if (photoBlob) {
+        const path = uid + "/avatar.jpg";
+        const up = await db.storage.from("avatars").upload(path, photoBlob, { upsert: true, contentType: "image/jpeg" });
+        if (up.error) { console.error(up.error); setMsg("Your photo didn't upload, so it was skipped. You can add it later from Edit profile.", "err"); photo_path = existingPhotoPath; }
+        else photo_path = path;
+      }
+      const row = {
+        id: uid,
+        first_name: meta.first_name || (currentProfile && currentProfile.first_name) || null,
+        year: meta.year || (currentProfile && currentProfile.year) || null,
+        commute: meta.commute || (currentProfile && currentProfile.commute) || null,
+        major: $("major").value.trim(),
+        free_times: timesToObject(),
+        activities: [...GROUPS.doing.set], goals: [...GROUPS.goals.set],
+        social_level: answers.pace || null,
+        last_initial: $("lastInitial").value.trim().toUpperCase() || null,
+        fun_fact: $("funFact").value.trim() || null,
+        likes: [...GROUPS.likes.set], dislikes: [...GROUPS.dislikes.set],
+        photo_path,
+        updated_at: new Date().toISOString()
+      };
+      const { error } = await db.from("profiles").upsert(row);
+      if (error) { console.error(error); return setMsg("Couldn't save your profile: " + error.message, "err"); }
+      currentProfile = row;
+      showWelcome(row);
+    } finally { $("nextBtn").disabled = false; }
+  }
+
+  async function showWelcome(profile, note) {
+    mode = "signin"; flow = "signup";
+    const meta = (currentUser && currentUser.user_metadata) || {};
+    const name = (profile && profile.first_name) || meta.first_name || "there";
+    const initial = profile && profile.last_initial ? " " + profile.last_initial + "." : "";
+    $("welcomeTitle").textContent = "Welcome, " + name + initial + "!";
+    $("welcomeText").textContent = note || "Your profile is saved. Matching with other students is coming soon.";
+    const sum = $("summary"); sum.replaceChildren();
+    if (profile && profile.major) {
+      const line = (label, value) => { if (!value) return; const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = label + ": "; d.append(b, document.createTextNode(value)); sum.appendChild(d); };
+      line("🎓 Major", profile.major);
+      line("📅 Free times", Object.keys(profile.free_times || {}).join(", "));
+      line("🎯 Into", (profile.activities || []).join(", "));
+      line("🌟 Goals", (profile.goals || []).join(", "));
+      line("🔥 Pace", profile.social_level);
+      line("💜 Likes", (profile.likes || []).join(", "));
+      line("🙅 Dislikes", (profile.dislikes || []).join(", "));
+      line("✨ Fun fact", profile.fun_fact);
+      sum.classList.remove("hidden");
+    } else sum.classList.add("hidden");
+    $("editBtn").classList.toggle("hidden", !!note);
+    showAvatar($("welcomeAvatar"), null, "🎉");
+    $("authForm").classList.add("hidden");
+    $("switchRow").classList.add("hidden");
+    $("welcome").classList.remove("hidden");
+    if (profile && profile.photo_path) { const url = await signedPhoto(profile.photo_path); if (url) showAvatar($("welcomeAvatar"), url, "🎉"); }
+  }
+
+  function showForm() {
+    currentUser = null; currentProfile = null;
+    $("welcome").classList.add("hidden");
+    $("authForm").classList.remove("hidden");
+    setMode("signin");
   }
 
   $("authForm").addEventListener("submit", (e) => {
@@ -358,16 +709,18 @@
     if (mode === "signin") return doSignIn();
     if (OPTION_STEPS.includes(current)) return;
     if (!validate(current)) return;
+    if (mode === "profile") return current === "dislikes" ? saveProfile() : go(1);
     if (current === "age") return doSignUp();
     go(1);
   });
 
+  $("editBtn").addEventListener("click", startProfile);
   $("signOutBtn").addEventListener("click", async () => { await db.auth.signOut(); showForm(); });
 
-  // Keep people signed in between visits
-  db.auth.getSession().then(({ data }) => { if (data.session) showWelcome(data.session.user); });
-  bindToggle();
+  buildChips(); buildTimes(); bindToggle();
   render("name", 0);
+  // Keep people signed in between visits
+  db.auth.getSession().then(({ data }) => { if (data.session) afterLogin(data.session.user); });
 </script>
 </body>
 </html>
