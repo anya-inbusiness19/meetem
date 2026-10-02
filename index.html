@@ -39,6 +39,19 @@
   label { display:block; font-size:14px; font-weight:600; margin:12px 0 6px; }
   input[type=text], input[type=email], input[type=password] { width:100%; padding:14px; font-size:17px; border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--text); }
   input:focus { outline:none; border-color:var(--brand); }
+  input[type=number], input[type=tel] { width:100%; padding:14px; font-size:17px; font-family:inherit; border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--text); }
+  input[type=number]:focus, input[type=tel]:focus { outline:none; border-color:var(--brand); }
+  .row2b { display:grid; grid-template-columns:110px 1fr; gap:10px; }
+  .vh { margin:20px 0 4px; font-size:17px; }
+  .vidrow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .vidrow span { font-size:14px; color:var(--muted); }
+  .vbadge { display:inline-block; margin-left:6px; padding:2px 8px; font-size:11px; font-weight:800; color:#1b7f3b; background:#e4f6ea; border-radius:99px; vertical-align:middle; white-space:nowrap; }
+  .mc-more { margin-top:12px; padding-top:12px; border-top:1px solid var(--line); font-size:14px; line-height:1.5; }
+  .mc-more p { margin:4px 0; }
+  .mc-media { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:10px; }
+  .mc-media img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; display:block; background:var(--tint); }
+  .mc-media video, .pg-video video { width:100%; max-height:360px; border-radius:12px; background:#000; display:block; }
+  .mc-media video { grid-column:1 / -1; }
   button:focus-visible, a:focus-visible { outline:3px solid var(--brand); outline-offset:2px; }
 
   .options { display:grid; gap:10px; }
@@ -305,9 +318,13 @@
 
       <section class="step" data-step="sent">
         <span class="emoji" aria-hidden="true">📬</span>
-        <h2 class="q">Check your email!</h2>
-        <p class="sub">We sent a confirmation link to your school email. Tap it, then come back here and sign in. Check spam if you don't see it.</p>
-        <button type="button" class="main" id="toSignin" style="width:100%">Go to sign in</button>
+        <h2 class="q">Enter your code</h2>
+        <p class="sub">We emailed a code to <b id="codeEmail"></b>. Type it below. Check spam if you don't see it.</p>
+        <label for="code">Confirmation code</label>
+        <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" style="font-size:28px;letter-spacing:6px;text-align:center">
+        <button type="button" class="main" id="verifyBtn" style="width:100%;margin-top:14px">Confirm ✅</button>
+        <button type="button" class="ghost" id="resendBtn">Send a new code</button>
+        <button type="button" class="showpw" id="toSignin" style="display:block;margin:6px auto 0">Back to sign in</button>
       </section>
 
       <section class="step" data-step="signin">
@@ -321,6 +338,40 @@
       </section>
 
       <!-- ============ PROFILE ============ -->
+      <section class="step" data-step="basics">
+        <span class="emoji" aria-hidden="true">🏫</span>
+        <h2 class="q">The basics</h2>
+        <p class="sub">Your college, age and ZIP help us find people near you. Your ZIP code is never shown to other students.</p>
+        <label for="college">College</label>
+        <input id="college" type="text" list="colleges" maxlength="80" autocomplete="off" placeholder="Calhoun Community College">
+        <datalist id="colleges">
+          <option value="Calhoun Community College"></option>
+          <option value="University of Alabama in Huntsville"></option>
+          <option value="Alabama A&amp;M University"></option>
+          <option value="Oakwood University"></option>
+          <option value="Athens State University"></option>
+          <option value="Wallace State Community College"></option>
+          <option value="J.F. Drake State Community and Technical College"></option>
+        </datalist>
+        <div class="row2b" style="margin-top:6px">
+          <div>
+            <label for="ageIn">Age</label>
+            <input id="ageIn" type="number" inputmode="numeric" min="18" max="99" placeholder="19">
+          </div>
+          <div>
+            <label for="level">School level</label>
+            <select id="level">
+              <option>Undergraduate</option>
+              <option>Graduate</option>
+              <option>Certificate or trade program</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <label for="zip">ZIP code (optional)</label>
+        <input id="zip" type="text" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="35806">
+      </section>
+
       <section class="step" data-step="major">
         <span class="emoji" aria-hidden="true">📚</span>
         <h2 class="q">What's your major or program?</h2>
@@ -362,6 +413,17 @@
         <div class="chips" id="chipsGoals"></div>
       </section>
 
+      <section class="step" data-step="looking">
+        <span class="emoji" aria-hidden="true">🔍</span>
+        <h2 class="q">What are you looking for?</h2>
+        <p class="sub">Tap some, or add your own.</p>
+        <div class="chips" id="chipsLooking"></div>
+        <div class="addrow">
+          <input id="lookingCustom" type="text" maxlength="24" autocomplete="off" placeholder="Add your own">
+          <button type="button" class="addbtn" data-group="looking">Add</button>
+        </div>
+      </section>
+
       <section class="step" data-step="pace">
         <span class="emoji" aria-hidden="true">🔥</span>
         <h2 class="q">How social do you want to be?</h2>
@@ -373,10 +435,32 @@
         </div>
       </section>
 
+      <section class="step" data-step="talents">
+        <span class="emoji" aria-hidden="true">🎨</span>
+        <h2 class="q">What are your talents?</h2>
+        <p class="sub">Optional. Tap what you're good at, or add your own.</p>
+        <div class="chips" id="chipsTalents"></div>
+        <div class="addrow">
+          <input id="talentsCustom" type="text" maxlength="24" autocomplete="off" placeholder="Add your own">
+          <button type="button" class="addbtn" data-group="talents">Add</button>
+        </div>
+      </section>
+
+      <section class="step" data-step="meetup">
+        <span class="emoji" aria-hidden="true">🗺️</span>
+        <h2 class="q">Where do you like to meet up?</h2>
+        <p class="sub">Public places only. Tap some, or add your own.</p>
+        <div class="chips" id="chipsMeetup"></div>
+        <div class="addrow">
+          <input id="meetupCustom" type="text" maxlength="24" autocomplete="off" placeholder="Add your own">
+          <button type="button" class="addbtn" data-group="meetup">Add</button>
+        </div>
+      </section>
+
       <section class="step" data-step="photo">
         <span class="emoji" aria-hidden="true">📸</span>
-        <h2 class="q">Add a profile photo</h2>
-        <p class="sub">Optional. A clear photo of your face helps people recognize you at a meetup.</p>
+        <h2 class="q">Add a photo and a video</h2>
+        <p class="sub">Both are optional. A clear photo of your face helps people recognize you at a meetup.</p>
         <div class="photo-wrap">
           <div class="avatar" id="photoPrev" aria-hidden="true">😊</div>
           <div class="photo-btns">
@@ -385,6 +469,14 @@
           </div>
         </div>
         <input id="photoInput" type="file" accept="image/*" class="hidden" aria-label="Choose a profile photo">
+        <h3 class="vh">Intro video 🎬</h3>
+        <p class="sub">One short video, up to 25 MB (about 20 seconds). Tip: record at 720p to keep it small. Your camera can save where a video was filmed, so film somewhere you're fine sharing.</p>
+        <div class="vidrow">
+          <button type="button" class="back" id="videoBtn">Choose video 🎬</button>
+          <button type="button" class="showpw" id="videoClear">Remove video</button>
+          <span id="videoName"></span>
+        </div>
+        <input id="videoInput" type="file" accept="video/mp4,video/quicktime" class="hidden" aria-label="Choose an intro video">
       </section>
 
       <section class="step" data-step="about">
@@ -401,7 +493,10 @@
             <input id="funFact" type="text" maxlength="120" autocomplete="off" placeholder="I can draw anything">
           </div>
         </div>
-        <p class="sub" style="margin-top:12px">Keep it light. Please don't add phone numbers or social handles.</p>
+        <p class="sub" style="margin-top:12px">Keep your fun fact light. Please don't put phone numbers or social handles in it.</p>
+        <label for="phone">Phone number (optional)</label>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(256) 555-0123">
+        <p class="sub" style="margin-top:8px">Private. Never shown to other students.</p>
       </section>
 
       <section class="step" data-step="likes">
@@ -424,6 +519,13 @@
           <input id="dislikesCustom" type="text" maxlength="24" autocomplete="off" placeholder="Add your own">
           <button type="button" class="addbtn" data-group="dislikes">Add</button>
         </div>
+      </section>
+
+      <section class="step" data-step="prefer">
+        <span class="emoji" aria-hidden="true">🎯</span>
+        <h2 class="q">Who are you looking for?</h2>
+        <p class="sub">Pick what matters most. We'll rank people higher when you share these with them.</p>
+        <div class="chips" id="chipsPrefer"></div>
       </section>
     </div>
 
@@ -456,6 +558,7 @@
         <div class="avatar pg-avatar" id="welcomeAvatar" aria-hidden="true">🎉</div>
         <h2 class="pg-name" id="welcomeTitle">Welcome!</h2>
         <p class="pg-meta" id="pgMeta"></p>
+        <p class="pg-meta hidden" id="pgVerified"><span class="vbadge" style="margin-left:0">✓ Verified student</span></p>
         <p class="pg-fact hidden" id="pgFact"></p>
         <p class="pg-note" id="welcomeText"></p>
         <div class="pg-actions"><button id="editBtn" class="main" type="button">Edit profile ✏️</button></div>
@@ -467,11 +570,16 @@
 
         <section class="pg-sec">
           <h3>My photos <small id="galleryCount"></small></h3>
-          <p class="sub" style="margin-bottom:0">Add up to 4 personal photos: you, your art, your pets, your favorite spots. Only you can see these for now.</p>
+          <p class="sub" style="margin-bottom:0">Add up to 4 personal photos: you, your art, your pets, your favorite spots. Students you match with can see these when they tap View profile.</p>
           <div class="gallery" id="galleryGrid"></div>
           <button type="button" class="ghost" id="galleryAdd" style="margin-top:0">Add photos 📷</button>
           <input id="galleryInput" type="file" accept="image/*" multiple class="hidden" aria-label="Choose gallery photos">
           <div id="galleryMsg" class="msg" role="status"></div>
+        </section>
+
+        <section class="pg-sec hidden" id="pgVideoSec">
+          <h3>My video</h3>
+          <div class="pg-video" id="pgVideo"></div>
         </section>
 
         <section class="pg-sec">
@@ -574,7 +682,7 @@
 
   </div>
 
-  <p class="small">Matched students see your first name, last initial, profile photo, year, major, interests and fun fact. Never your email.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
+  <p class="small">Matched students see your first name, last initial, age, college, major, photos, video, interests, talents and fun fact. Never your email, phone number or ZIP code.<br>By signing up you agree to our <a href="/privacy.html">Privacy Policy</a>.</p>
 </div>
 
 <script>
@@ -586,7 +694,7 @@
   const $ = (id) => document.getElementById(id);
   const FLOWS = {
     signup: ["name", "year", "commute", "email", "password", "age"],
-    profile: ["major", "times", "doing", "goals", "pace", "photo", "about", "likes", "dislikes"]
+    profile: ["basics", "major", "times", "doing", "goals", "looking", "pace", "talents", "meetup", "photo", "about", "likes", "dislikes", "prefer"]
   };
   const OPTION_STEPS = ["year", "commute", "pace"];   // tap one, slide on
   const answers = { year: "", commute: "", pace: "" };
@@ -599,7 +707,11 @@
     doing: { el: "chipsDoing", set: new Set(), custom: false, presets: [["☕", "Coffee"], ["📚", "Study"], ["🚶", "Walks"], ["🎯", "Clubs"], ["🍕", "Food"], ["🎮", "Games"]] },
     goals: { el: "chipsGoals", set: new Set(), custom: false, presets: [["🤝", "Make friends"], ["📖", "Find a study group"], ["🌍", "Meet people outside my major"]] },
     likes: { el: "chipsLikes", set: new Set(), custom: true, presets: [["🐶", "Animals"], ["🍎", "Apple products"], ["🎵", "Music"], ["🎮", "Gaming"], ["🎬", "Movies"], ["📚", "Reading"], ["💪", "Fitness"], ["🎨", "Art"], ["🍕", "Food"], ["✈️", "Travel"], ["🏈", "Sports"], ["💻", "Tech"]] },
-    dislikes: { el: "chipsDislikes", set: new Set(), custom: true, presets: [["🌅", "Early mornings"], ["🔊", "Loud places"], ["⏰", "Running late"], ["🥶", "Cold weather"], ["🚗", "Traffic"], ["📞", "Phone calls"], ["🌶️", "Spicy food"], ["🍄", "Mushrooms"]] }
+    dislikes: { el: "chipsDislikes", set: new Set(), custom: true, presets: [["🌅", "Early mornings"], ["🔊", "Loud places"], ["⏰", "Running late"], ["🥶", "Cold weather"], ["🚗", "Traffic"], ["📞", "Phone calls"], ["🌶️", "Spicy food"], ["🍄", "Mushrooms"]] },
+    looking: { el: "chipsLooking", set: new Set(), custom: true, presets: [["🤝", "Friends in the area"], ["📚", "Study partners"], ["🏋️", "Workout buddies"], ["🎨", "Creative collaborators"], ["🎟️", "Someone to go to events with"], ["💼", "Side-hustle buddies"]] },
+    talents: { el: "chipsTalents", set: new Set(), custom: true, presets: [["🎨", "Art"], ["🎤", "Singing"], ["🎸", "Music"], ["💃", "Dance"], ["✍️", "Writing"], ["📷", "Photography"], ["⚽", "Sports"], ["💻", "Coding"], ["🍳", "Cooking"], ["😂", "Comedy"], ["🎬", "Video"], ["🧶", "Crafts"]] },
+    meetup: { el: "chipsMeetup", set: new Set(), custom: true, presets: [["🌳", "Park"], ["☕", "Coffee shop"], ["📚", "Library"], ["🏫", "Campus"], ["🍕", "Food spot"], ["🏋️", "Gym"], ["🛍️", "Mall"]] },
+    prefer: { el: "chipsPrefer", set: new Set(), custom: false, presets: [["🎨", "Talents"], ["💜", "Interests"], ["📚", "Major"], ["🙅", "Dislikes"]] }
   };
 
   let mode = "signup";    // "signup" | "signin" | "profile"
@@ -611,6 +723,7 @@
   let photoBlob = null;       // a newly chosen photo, not yet uploaded
   let photoRemoved = false;
   let existingPhotoPath = null;
+  let videoFile = null, videoRemoved = false, existingVideoPath = null;
 
   function setMsg(text, type) { const m = $("msg"); m.textContent = text || ""; m.className = "msg " + (type || ""); }
   const steps = () => FLOWS[flow] || [];
@@ -637,10 +750,10 @@
     $("actions").classList.toggle("hidden", key === "sent");
     $("backBtn").classList.toggle("hidden", !(isFlow && idx > 0));
     $("nextBtn").classList.toggle("hidden", isOption);
-    $("nextBtn").textContent = key === "age" ? "Create account 🚀" : key === "dislikes" ? "Save my profile ✅" : key === "signin" ? "Sign in" : "Continue";
+    $("nextBtn").textContent = key === "age" ? "Create account 🚀" : key === "prefer" ? "Save my profile ✅" : key === "signin" ? "Sign in" : "Continue";
 
     const f = document.querySelector('.step.active input[type=text], .step.active input[type=email], .step.active input[type=password]');
-    if (f && dir !== 0 && key !== "likes" && key !== "dislikes") setTimeout(() => f.focus({ preventScroll: true }), 380);
+    if (f && dir !== 0 && key !== "likes" && key !== "dislikes" && key !== "looking" && key !== "talents" && key !== "meetup") setTimeout(() => f.focus({ preventScroll: true }), 380);
   }
 
   function go(delta) {
@@ -728,7 +841,7 @@
     setMsg("");
   }
   document.querySelectorAll(".addbtn[data-group]").forEach((b) => b.addEventListener("click", () => addCustom(b.dataset.group)));
-  ["likes", "dislikes"].forEach((k) => $(k + "Custom").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(k); } }));
+  ["likes", "dislikes", "looking", "talents", "meetup"].forEach((k) => $(k + "Custom").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(k); } }));
 
   /* ---------- free times grid ---------- */
   function buildTimes() {
@@ -798,6 +911,23 @@
   });
   $("photoClear").addEventListener("click", () => { photoBlob = null; photoRemoved = true; showAvatar($("photoPrev"), null, "😊"); });
 
+  /* ---------- intro video ---------- */
+  const MAX_VIDEO = 25 * 1024 * 1024;
+  $("videoBtn").addEventListener("click", () => $("videoInput").click());
+  $("videoInput").addEventListener("change", async () => {
+    const file = $("videoInput").files[0]; $("videoInput").value = "";
+    if (!file) return;
+    const okType = /^video\/(mp4|quicktime)$/.test(file.type) || /\.(mp4|mov)$/i.test(file.name);
+    if (!okType) return setMsg("Please choose an MP4 or MOV video.", "err");
+    if (file.size > MAX_VIDEO) return setMsg("That video is " + Math.round(file.size / 1048576) + " MB. The limit is 25 MB. Try a shorter one, or record at 720p.", "err");
+    setMsg("");
+    videoFile = file; videoRemoved = false;
+    $("videoName").textContent = "🎬 " + (file.size / 1048576).toFixed(1) + " MB ready ✅";
+  });
+  $("videoClear").addEventListener("click", () => {
+    videoFile = null; if (existingVideoPath) videoRemoved = true; $("videoName").textContent = "";
+  });
+
   /* ---------- sign-up / sign-in ---------- */
   $("name").addEventListener("input", () => {
     const n = $("name").value.trim();
@@ -808,18 +938,30 @@
     p.type = show ? "text" : "password"; $("showPw").textContent = show ? "Hide password" : "Show password";
   });
   $("backBtn").addEventListener("click", () => go(-1));
-  $("toSignin").addEventListener("click", () => { $("siEmail").value = $("email").value; setMode("signin"); });
+  $("toSignin").addEventListener("click", () => { $("siEmail").value = $("email").value || pendingEmail || ""; setMode("signin"); });
 
+  function cleanPhone(raw) {
+    let d = String(raw || "").replace(/\D/g, "");
+    if (d.length === 11 && d[0] === "1") d = d.slice(1);
+    return /^[0-9]{10,15}$/.test(d) ? d : null;
+  }
   function validate(key) {
     if (key === "name") { if (!$("name").value.trim()) return setMsg("Please enter your first name.", "err"), false; }
     else if (key === "email") { if (!/^[^@\s]+@[^@\s]+\.edu$/.test($("email").value.trim().toLowerCase())) return setMsg("Please use your school email ending in .edu.", "err"), false; }
     else if (key === "password") { if ($("password").value.length < 8) return setMsg("Password must be at least 8 characters.", "err"), false; }
     else if (key === "age") { if (!$("age").checked) return setMsg("You must be 18 or older to join.", "err"), false; }
+    else if (key === "basics") {
+      if (!$("college").value.trim()) return setMsg("Please enter your college.", "err"), false;
+      const a = Number($("ageIn").value);
+      if (!Number.isInteger(a) || a < 18 || a > 99) return setMsg("Please enter your age (you must be 18 or older).", "err"), false;
+      const z = $("zip").value.trim(); if (z && !/^\d{5}$/.test(z)) return setMsg("ZIP code should be 5 numbers, or leave it blank.", "err"), false;
+    }
+    else if (["looking", "talents", "meetup"].includes(key)) { if (GROUPS[key].set.size > 8) return setMsg("Pick up to 8.", "err"), false; }
+    else if (key === "about") { const v = $("lastInitial").value.trim(); if (v && !/^[A-Za-z]$/.test(v)) return setMsg("Last initial should be one letter.", "err"), false; if ($("phone").value.trim() && !cleanPhone($("phone").value)) return setMsg("That phone number doesn't look right. Use 10 digits, or leave it blank.", "err"), false; }
     else if (key === "major") { if (!$("major").value.trim()) return setMsg("Please enter your major, or type Undecided.", "err"), false; }
     else if (key === "times") { if (timesCount() < 1) return setMsg("Tap at least one time you're usually free.", "err"), false; }
     else if (key === "doing") { if (GROUPS.doing.set.size < 1) return setMsg("Pick at least one.", "err"), false; }
     else if (key === "goals") { if (GROUPS.goals.set.size < 1) return setMsg("Pick at least one.", "err"), false; }
-    else if (key === "about") { const v = $("lastInitial").value.trim(); if (v && !/^[A-Za-z]$/.test(v)) return setMsg("Last initial should be one letter.", "err"), false; }
     return true;
   }
 
@@ -833,7 +975,7 @@
         options: { emailRedirectTo: window.location.origin, data: { first_name: $("name").value.trim(), year: answers.year, commute: answers.commute } }
       });
       if (error) return setMsg(error.message, "err");
-      if (data.session) afterLogin(data.user); else render("sent", 1);
+      if (data.session) afterLogin(data.user); else showCodeStep($("email").value.trim().toLowerCase());
     } finally { $("nextBtn").disabled = false; }
   }
 
@@ -845,10 +987,54 @@
     $("nextBtn").disabled = true;
     try {
       const { data, error } = await db.auth.signInWithPassword({ email, password });
-      if (error) return setMsg(error.message, "err");
+      if (error) {
+        if (/not confirmed/i.test(error.message)) {
+          await db.auth.resend({ type: "signup", email, options: { emailRedirectTo: window.location.origin } });
+          showCodeStep(email);
+          return setMsg("Your email isn't confirmed yet. We sent you a new code.", "ok");
+        }
+        return setMsg(error.message, "err");
+      }
       afterLogin(data.user);
     } finally { $("nextBtn").disabled = false; }
   }
+
+  /* ---------- email confirmation code ---------- */
+  let pendingEmail = "", resendTimer = null;
+  function showCodeStep(email) {
+    pendingEmail = email;
+    $("codeEmail").textContent = email; $("code").value = "";
+    mode = "signup"; flow = "signup"; setMsg("");
+    $("switchRow").classList.add("hidden");
+    render("sent", 1);
+    startResendCooldown(60);
+  }
+  function startResendCooldown(sec) {
+    clearInterval(resendTimer);
+    const b = $("resendBtn"); let left = sec; b.disabled = true;
+    const tick = () => { if (left <= 0) { clearInterval(resendTimer); b.disabled = false; b.textContent = "Send a new code"; } else { b.textContent = "Send a new code (" + left + "s)"; left--; } };
+    tick(); resendTimer = setInterval(tick, 1000);
+  }
+  async function verifyCode() {
+    const token = $("code").value.replace(/\D/g, "");
+    if (token.length < 6) return setMsg("Enter the code from your email.", "err");
+    $("verifyBtn").disabled = true; setMsg("Checking…", "ok");
+    try {
+      const { data, error } = await db.auth.verifyOtp({ email: pendingEmail, token, type: "signup" });
+      if (error) return setMsg(/expired|invalid/i.test(error.message) ? "That code didn't work or it expired. Tap Send a new code." : error.message, "err");
+      setMsg("");
+      if (data && data.user) afterLogin(data.user);
+    } finally { $("verifyBtn").disabled = false; }
+  }
+  async function resendCode() {
+    $("resendBtn").disabled = true;
+    const { error } = await db.auth.resend({ type: "signup", email: pendingEmail, options: { emailRedirectTo: window.location.origin } });
+    if (error) { setMsg(/rate|seconds|too many/i.test(error.message) ? "Too many emails right now. Please wait a few minutes and try again." : error.message, "err"); $("resendBtn").disabled = false; return; }
+    setMsg("New code sent. Check your email.", "ok"); startResendCooldown(60);
+  }
+  $("verifyBtn").addEventListener("click", verifyCode);
+  $("resendBtn").addEventListener("click", resendCode);
+  $("code").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); verifyCode(); } });
 
   /* ---------- after login: profile or welcome ---------- */
   async function afterLogin(user) {
@@ -864,6 +1050,8 @@
     Object.keys(times).forEach((k) => delete times[k]);
     Object.values(GROUPS).forEach((g) => g.set.clear());
     answers.pace = ""; photoBlob = null; photoRemoved = false; existingPhotoPath = null;
+    $("college").value = ""; $("ageIn").value = ""; $("level").value = "Undergraduate"; $("zip").value = ""; $("phone").value = "";
+    videoFile = null; videoRemoved = false; existingVideoPath = null; $("videoName").textContent = "";
     buildChips(); buildTimes(); showAvatar($("photoPrev"), null, "😊");
   }
 
@@ -876,6 +1064,10 @@
       GROUPS.doing.set = new Set(p.activities || []); GROUPS.goals.set = new Set(p.goals || []);
       GROUPS.likes.set = new Set(p.likes || []); GROUPS.dislikes.set = new Set(p.dislikes || []);
       answers.pace = p.social_level || ""; existingPhotoPath = p.photo_path || null;
+      $("college").value = p.college || ""; $("ageIn").value = p.age || ""; $("level").value = p.school_level || "Undergraduate"; $("zip").value = p.zip || ""; $("phone").value = p.phone || "";
+      GROUPS.talents.set = new Set(p.talents || []); GROUPS.looking.set = new Set(p.looking_for || []);
+      GROUPS.meetup.set = new Set(p.meetup_places || []); GROUPS.prefer.set = new Set(p.prefer || []);
+      existingVideoPath = p.video_path || null; $("videoName").textContent = existingVideoPath ? "Video added ✅" : "";
       syncChips(); syncTimes();
       if (existingPhotoPath) { const url = await signedPhoto(existingPhotoPath); if (url) showAvatar($("photoPrev"), url, "😊"); }
     }
@@ -885,7 +1077,7 @@
     $("welcome").classList.add("hidden");
     $("authForm").classList.remove("hidden");
     $("switchRow").classList.add("hidden");
-    render("major", 1);
+    render(FLOWS.profile[0], 1);
   }
 
   async function signedPhoto(path) {
@@ -906,6 +1098,14 @@
         if (up.error) { console.error(up.error); setMsg("Your photo didn't upload, so it was skipped. You can add it later from Edit profile.", "err"); photo_path = existingPhotoPath; }
         else photo_path = path;
       }
+      let video_path = existingVideoPath;
+      if (videoRemoved && existingVideoPath) { db.storage.from("videos").remove([existingVideoPath]); video_path = null; }
+      if (videoFile) {
+        const vpath = uid + "/intro.mp4";
+        const vu = await db.storage.from("videos").upload(vpath, videoFile, { upsert: true, contentType: videoFile.type || "video/mp4" });
+        if (vu.error) { console.error(vu.error); setMsg("Your video didn't upload, so it was skipped. You can add it later from Edit profile.", "err"); video_path = videoRemoved ? null : existingVideoPath; }
+        else video_path = vpath;
+      }
       const row = {
         id: uid,
         first_name: meta.first_name || (currentProfile && currentProfile.first_name) || null,
@@ -919,11 +1119,24 @@
         fun_fact: $("funFact").value.trim() || null,
         likes: [...GROUPS.likes.set], dislikes: [...GROUPS.dislikes.set],
         photo_path,
+        college: $("college").value.trim() || null,
+        age: Number($("ageIn").value) || null,
+        school_level: $("level").value || null,
+        zip: $("zip").value.trim() || null,
+        phone: cleanPhone($("phone").value),
+        talents: [...GROUPS.talents.set], looking_for: [...GROUPS.looking.set],
+        meetup_places: [...GROUPS.meetup.set], prefer: [...GROUPS.prefer.set],
+        video_path,
         updated_at: new Date().toISOString()
       };
       const { error } = await db.from("profiles").upsert(row);
-      if (error) { console.error(error); return setMsg("Couldn't save your profile: " + error.message, "err"); }
+      if (error) {
+        console.error(error);
+        const missing = /column|schema cache/i.test(error.message);
+        return setMsg(missing ? "Profile upgrade isn't switched on yet. The site owner needs to run profile-setup.sql in Supabase." : "Couldn't save your profile: " + error.message, "err");
+      }
       currentProfile = Object.assign({}, currentProfile, row);
+      videoFile = null; videoRemoved = false; existingVideoPath = video_path;
       showWelcome(currentProfile);
     } finally { $("nextBtn").disabled = false; }
   }
@@ -935,17 +1148,22 @@
     const name = (profile && profile.first_name) || meta.first_name || "there";
     const initial = profile && profile.last_initial ? " " + profile.last_initial + "." : "";
     $("welcomeTitle").textContent = name + initial;
-    $("pgMeta").textContent = profile && profile.major ? [profile.major, profile.year].filter(Boolean).join(" · ") : "";
+    $("pgMeta").textContent = profile && profile.major ? [profile.age, profile.college, profile.major, profile.year].filter(Boolean).join(" · ") : "";
+    $("pgVerified").classList.toggle("hidden", !(currentUser && currentUser.email_confirmed_at && /\.edu$/i.test(currentUser.email || "")));
     const fact = $("pgFact");
     if (profile && profile.fun_fact) { fact.textContent = "✨ " + profile.fun_fact; fact.classList.remove("hidden"); } else fact.classList.add("hidden");
-    $("welcomeText").textContent = note || "";
-    $("welcomeText").classList.toggle("hidden", !note);
+    const nudge = !note && profile && profile.major && !profile.college ? "New: add your college, age, talents and meetup spots to get better matches. Tap Edit profile." : "";
+    $("welcomeText").textContent = note || nudge;
+    $("welcomeText").classList.toggle("hidden", !(note || nudge));
     const tags = $("pgTags"); tags.replaceChildren();
     const addTags = (items, cls, prefix) => (items || []).forEach((t) => tags.appendChild(el("span", "tag-pill " + cls, (prefix || "") + t)));
     if (profile && profile.major) {
       addTags(profile.activities, "", "🎯 ");
       addTags(profile.goals, "go", "🌟 ");
       if (profile.social_level) addTags([profile.social_level], "", "🔥 ");
+      addTags(profile.talents, "", "🎨 ");
+      addTags(profile.looking_for, "go", "🔍 ");
+      addTags(profile.meetup_places, "", "📍 ");
       addTags(profile.likes, "", "💜 ");
       addTags(profile.dislikes, "dis", "🙅 ");
       const days = Object.keys(profile.free_times || {});
@@ -958,7 +1176,22 @@
     $("switchRow").classList.add("hidden");
     $("welcome").classList.remove("hidden");
     selectTab(profile && profile.major ? "Matches" : "Page");
+    renderOwnVideo(profile);
     if (profile && profile.photo_path) { const url = await signedPhoto(profile.photo_path); if (url) showAvatar($("welcomeAvatar"), url, "🎉"); }
+  }
+
+  function makeVideo(url) {
+    const v = document.createElement("video");
+    v.controls = true; v.preload = "metadata"; v.setAttribute("playsinline", ""); v.setAttribute("controlslist", "nodownload");
+    v.src = url; return v;
+  }
+  async function renderOwnVideo(profile) {
+    const sec = $("pgVideoSec"), box = $("pgVideo"); box.replaceChildren();
+    if (!profile || !profile.video_path) { sec.classList.add("hidden"); return; }
+    try {
+      const { data } = await db.storage.from("videos").createSignedUrl(profile.video_path, 3600);
+      if (data && data.signedUrl) { box.appendChild(makeVideo(data.signedUrl)); sec.classList.remove("hidden"); } else sec.classList.add("hidden");
+    } catch (e) { sec.classList.add("hidden"); }
   }
 
   function showForm() {
@@ -972,10 +1205,11 @@
   $("authForm").addEventListener("submit", (e) => {
     e.preventDefault();
     setMsg("");
+    if (current === "sent") return verifyCode();
     if (mode === "signin") return doSignIn();
     if (OPTION_STEPS.includes(current)) return;
     if (!validate(current)) return;
-    if (mode === "profile") return current === "dislikes" ? saveProfile() : go(1);
+    if (mode === "profile") return current === "prefer" ? saveProfile() : go(1);
     if (current === "age") return doSignUp();
     go(1);
   });
@@ -1298,6 +1532,10 @@
     if ((m.shared_activities || []).length) out.push(["🎯", "Both into " + listText(m.shared_activities)]);
     if ((m.shared_goals || []).length) out.push(["🌟", "Same goal: " + listText(m.shared_goals)]);
     if (m.different_major && ((currentProfile && currentProfile.goals) || []).includes("Meet people outside my major")) out.push(["🌍", "Different major, like you wanted"]);
+    if ((m.shared_talents || []).length) out.push(["🎨", "Shared talent: " + listText(m.shared_talents)]);
+    if ((m.shared_looking || []).length) out.push(["🔍", "Both looking for " + listText(m.shared_looking)]);
+    if ((m.shared_places || []).length) out.push(["🗺️", "Both like meeting at " + listText(m.shared_places)]);
+    if (m.nearby) out.push(["📍", "Lives in your area"]);
     if ((m.shared_likes || []).length) out.push(["💜", "You both like " + listText(m.shared_likes)]);
     if (m.same_pace && currentProfile && currentProfile.social_level) out.push(["🔥", "Same pace: " + currentProfile.social_level]);
     if ((m.shared_dislikes || []).length) out.push(["🙅", "Both dislike " + listText(m.shared_dislikes)]);
@@ -1308,8 +1546,10 @@
     const top = el("div", "mc-top");
     const av = el("div", "mc-av"); showAvatar(av, photoUrl, "😊"); top.appendChild(av);
     const who = el("div", "mc-who");
-    who.appendChild(el("h3", "", (m.first_name || "Student") + (m.last_initial ? " " + m.last_initial + "." : "")));
-    who.appendChild(el("p", "", [m.major, m.year].filter(Boolean).join(" · ")));
+    const h3 = el("h3", "", (m.first_name || "Student") + (m.last_initial ? " " + m.last_initial + "." : ""));
+    if (m.verified) h3.appendChild(el("span", "vbadge", "✓ Verified"));
+    who.appendChild(h3);
+    who.appendChild(el("p", "", [m.age, m.college, m.major, m.year].filter(Boolean).join(" · ")));
     top.appendChild(who);
     const pct = el("div", "pct", m.score + "%"); pct.appendChild(el("small", "", "MATCH")); top.appendChild(pct);
     card.appendChild(top);
@@ -1327,8 +1567,36 @@
       b.addEventListener("click", () => sendWave(m, b)); acts.appendChild(b);
       if (m.they_waved) acts.appendChild(el("span", "note", (m.first_name || "They") + " waved at you!"));
     }
+    const more = el("div", "mc-more hidden"); let moreBuilt = false;
+    const vb = el("button", "linkbtn", "View profile ▾"); vb.type = "button";
+    vb.addEventListener("click", async () => {
+      const open = more.classList.contains("hidden");
+      more.classList.toggle("hidden", !open); vb.textContent = open ? "Hide profile ▴" : "View profile ▾";
+      if (open && !moreBuilt) { moreBuilt = true; await buildMore(m, more); }
+    });
+    acts.appendChild(vb);
     card.appendChild(acts);
+    card.appendChild(more);
     return card;
+  }
+  async function buildMore(m, box) {
+    const line = (emoji, label, arr) => { if (arr && arr.length) box.appendChild(el("p", "", emoji + " " + label + ": " + listText(arr))); };
+    const basics = [m.school_level, m.age ? "Age " + m.age : null].filter(Boolean).join(" · ");
+    if (basics) box.appendChild(el("p", "", "🏫 " + basics));
+    line("🎨", "Talents", m.talents); line("🔍", "Looking for", m.looking_for); line("🗺️", "Meetup spots", m.meetup_places);
+    const media = el("div", "mc-media");
+    const paths = m.gallery_paths || [];
+    if (paths.length) {
+      try {
+        const r = await db.storage.from("avatars").createSignedUrls(paths, 3600);
+        (r.data || []).forEach((x) => { if (x.signedUrl) { const i = document.createElement("img"); i.src = x.signedUrl; i.alt = "Photo from " + (m.first_name || "this student") + "'s gallery"; i.loading = "lazy"; media.appendChild(i); } });
+      } catch (e) { /* photos are optional */ }
+    }
+    if (m.video_path) {
+      try { const r = await db.storage.from("videos").createSignedUrl(m.video_path, 3600); if (r.data && r.data.signedUrl) media.appendChild(makeVideo(r.data.signedUrl)); } catch (e) { /* video is optional */ }
+    }
+    if (media.children.length) box.appendChild(media);
+    if (!box.children.length) box.appendChild(el("p", "", "Nothing more to show yet."));
   }
   let matchLoadId = 0;
   async function loadMatches() {
