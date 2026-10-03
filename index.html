@@ -7,6 +7,13 @@
 <meta name="apple-mobile-web-app-title" content="MeetEm'">
 <meta name="theme-color" content="#5b3df5">
 <title>MeetEm' - College Meet Up</title>
+<meta name="description" content="MeetEm' matches college students by free time, interests and goals for small in-person meetups, study groups and campus events. Free with a .edu email.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MeetEm' - College Meet Up">
+<meta property="og:description" content="Meet college students who are free when you are. Matches, group chats and campus events. Free with a .edu email.">
+<meta property="og:image" content="https://meetem.org/og-image.png">
+<meta property="og:url" content="https://meetem.org/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -153,7 +160,7 @@
   body.app .tabs { position:fixed; left:0; right:0; bottom:0; z-index:6; margin:0; border-radius:0; padding:6px 8px; padding-bottom:calc(6px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid var(--line); justify-content:center; }
   body.app .small { padding:0 16px 110px; margin-top:8px; }
   .page { max-width:760px; margin:0 auto; padding:0 16px 24px; text-align:left; }
-  .cover { height:130px; background:linear-gradient(120deg,var(--brand),var(--pop)); margin:0 -16px; }
+  .cover { height:130px; background:linear-gradient(120deg,var(--brand),var(--pop)); margin:0; }
   .pg-avatar { width:124px; height:124px; margin:-62px 0 8px 4px; border:4px solid #fff; font-size:54px; }
   .pg-name { margin:0; font-size:30px; letter-spacing:-.5px; line-height:1.15; }
   .pg-meta { margin:4px 0 0; color:var(--muted); font-size:16px; }
@@ -234,10 +241,60 @@
   .chatrow p { margin:2px 0 0; font-size:13px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
   .chatrow .ci { flex:none; width:44px; height:44px; border-radius:50%; background:var(--tint); display:flex; align-items:center; justify-content:center; font-size:22px; }
   .chatrow .tx { flex:1; min-width:0; }
-  .clist { display:grid; gap:10px; }
+  .clist { display:grid; grid-template-columns:minmax(0,1fr); gap:10px; }
   .switchrow { display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid var(--line); border-radius:14px; background:#fff; font-size:15px; }
   .switchrow input { width:22px; height:22px; accent-color:var(--brand); flex:none; }
   .switchrow label { margin:0; font-weight:500; font-size:15px; }
+
+  /* ---- landing page (shown before sign-up) ---- */
+  #landing { display:none; }
+  body.landing { display:block; padding:0; }
+  body.landing #landing { display:block; }
+  body.landing .card { display:none; }
+  .ld { max-width:1080px; margin:0 auto; padding:0 16px; }
+  .ld-nav { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 0; }
+  .ld-nav .brand-sm { display:flex; align-items:center; gap:8px; font-size:24px; font-weight:800; color:var(--brand); letter-spacing:-.4px; }
+  .ld-nav .brand-sm .ap { color:var(--pop); }
+  .ld-link { font-size:15px; font-weight:700; color:var(--brand); background:var(--tint); border:0; border-radius:99px; padding:10px 16px; min-height:44px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; }
+  .hero { display:grid; grid-template-columns:1fr; gap:32px; align-items:center; padding:24px 0 40px; }
+  .hero h2 { margin:0; font-size:clamp(36px,7vw,58px); line-height:1.02; letter-spacing:-1.5px; text-wrap:balance; }
+  .hero h2 em { font-style:normal; color:var(--brand); }
+  .hero .lead { margin:16px 0 0; font-size:18px; line-height:1.5; color:var(--muted); max-width:34em; }
+  .cta { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+  .cta .main, .cta .back { flex:none; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 24px; }
+  .cta a.back { font-size:16px; font-weight:700; color:var(--brand); background:var(--tint); border-radius:12px; }
+  .cta-note { margin:12px 0 0; font-size:14px; color:var(--muted); }
+  .cta-note a { color:var(--brand); font-weight:700; cursor:pointer; }
+  .phone { justify-self:center; width:340px; max-width:100%; height:660px; border-radius:44px; padding:12px; background:#1d1b2e; box-shadow:0 30px 60px rgba(91,61,245,.25); display:none; }
+  .phone iframe { width:100%; height:100%; border:0; border-radius:34px; background:#fff; display:block; }
+  .preview { justify-self:stretch; display:grid; gap:10px; }
+  .ex-label { margin:0; font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--muted); }
+  .preview .mc { box-shadow:0 10px 30px rgba(91,61,245,.12); }
+  .preview .mc:nth-child(3) { margin-left:24px; opacity:.85; }
+  .ld-sec { padding:40px 0; border-top:1px solid var(--line); }
+  .ld-sec h3 { margin:0 0 6px; font-size:28px; letter-spacing:-.5px; text-wrap:balance; }
+  .ld-sec > p { margin:0 0 22px; color:var(--muted); font-size:16px; line-height:1.5; max-width:40em; }
+  .feat { display:grid; grid-template-columns:1fr; gap:12px; }
+  .feat > div { background:#fff; border:1.5px solid var(--line); border-radius:18px; padding:18px; }
+  .feat .fi { font-size:30px; line-height:1; }
+  .feat h4 { margin:10px 0 4px; font-size:18px; }
+  .feat p { margin:0; color:var(--muted); font-size:15px; line-height:1.5; }
+  .how { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr; gap:12px; counter-reset:how; }
+  .how li { display:flex; gap:14px; align-items:flex-start; }
+  .how li::before { counter-increment:how; content:counter(how); flex:none; width:36px; height:36px; border-radius:50%; background:var(--brand); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .how b { display:block; font-size:17px; margin-bottom:2px; }
+  .how span { color:var(--muted); font-size:15px; line-height:1.45; }
+  .safe { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr; gap:10px; }
+  .safe li { display:flex; gap:10px; align-items:flex-start; font-size:15px; line-height:1.45; background:#fff; border-radius:14px; padding:12px 14px; border:1.5px solid var(--line); }
+  .ld-end { text-align:center; padding:48px 0; border-top:1px solid var(--line); }
+  .ld-end h3 { margin:0 0 6px; font-size:28px; letter-spacing:-.5px; }
+  .ld-end .cta { justify-content:center; }
+  .ld-foot { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding:20px 0 32px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); }
+  .ld-foot a { color:var(--brand); text-decoration:none; font-weight:600; }
+  .tolanding { display:inline-block; margin:0 0 12px; font-size:14px; font-weight:600; color:var(--brand); text-decoration:none; cursor:pointer; }
+  body.app .tolanding { display:none; }
+  @media (min-width:640px) { .feat { grid-template-columns:repeat(2,1fr); } .how { grid-template-columns:repeat(3,1fr); } .how li { flex-direction:column; } .safe { grid-template-columns:repeat(2,1fr); } }
+  @media (min-width:900px) { .hero { grid-template-columns:1.1fr .9fr; padding:48px 0 64px; } .phone { display:block; } .preview { display:none; } .feat { grid-template-columns:repeat(4,1fr); } }
 
   @media (prefers-reduced-motion: reduce) {
     .step.in-right, .step.in-left, .step.active .emoji { animation:none; }
@@ -246,7 +303,86 @@
 </style>
 </head>
 <body>
+<script>
+  // Show the landing page to new visitors; skip it for signed-in people and direct sign-up links.
+  (function () {
+    var q = location.search, skip = /start=(signup|signin)/.test(q) || /access_token|type=/.test(location.hash);
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^sb-.*-auth-token$/.test(k)) skip = true; } } catch (e) {}
+    if (!skip) document.body.classList.add("landing");
+  })();
+</script>
+<div id="landing">
+  <div class="ld">
+    <nav class="ld-nav">
+      <div class="brand-sm"><img src="/logo.svg" width="36" height="36" alt=""><span>MeetEm<span class="ap">&#8217;</span></span></div>
+      <button type="button" class="ld-link" data-go="signin">Sign in</button>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <h2>Meet college students who are <em>free when you are.</em></h2>
+        <p class="lead">MeetEm' matches you with students at your school by free time, interests and goals, then helps you meet up in small groups. Study sessions, food runs, open mics. In person, on your schedule.</p>
+        <div class="cta">
+          <button type="button" class="main" data-go="signup">Sign up free</button>
+          <a class="back" href="/demo.html">Try the demo 👀</a>
+        </div>
+        <p class="cta-note">Free with your school .edu email. Already a member? <a data-go="signin" role="button" tabindex="0">Sign in</a></p>
+      </div>
+      <div class="phone" aria-label="Live demo of the MeetEm' app"><iframe src="/demo.html" title="MeetEm' demo" loading="lazy"></iframe></div>
+      <div class="preview" aria-label="Example of what a match looks like"><p class="ex-label">Example match · sample students</p>
+        <div class="mc new"><div class="mc-top"><div class="mc-av" style="background:#ffe9e5">🌸</div><div class="mc-who"><h3>Maya R.</h3><p>20 · Nursing</p></div><div class="pct">92%<small>MATCH</small></div></div><ul class="why"><li>🕑 Free Tue &amp; Thu afternoons, same as you</li><li>☕ Both into coffee and study sessions</li></ul></div>
+        <div class="mc"><div class="mc-top"><div class="mc-av" style="background:#e3f6ec">🏀</div><div class="mc-who"><h3>Andre W.</h3><p>19 · Business</p></div><div class="pct">84%<small>MATCH</small></div></div></div>
+      </div>
+    </section>
+
+    <section class="ld-sec">
+      <h3>Everything you need to actually meet up</h3>
+      <p>Most campus apps stop at a feed. MeetEm' is built around getting a few people in the same room.</p>
+      <div class="feat">
+        <div><div class="fi">✨</div><h4>Smart matches</h4><p>We compare free times, interests, goals and talents and show you why you'd click.</p></div>
+        <div><div class="fi">👋</div><h4>Wave to connect</h4><p>Wave at someone. If they wave back, a private chat opens. No cold DMs.</p></div>
+        <div><div class="fi">🎟️</div><h4>Events &amp; deals</h4><p>Students post study groups, game nights and cheap eats. Join and a group chat opens.</p></div>
+        <div><div class="fi">🎤</div><h4>Weekly challenges</h4><p>Fun weekly challenges, like a Friday sing battle, to get people out and meeting.</p></div>
+      </div>
+    </section>
+
+    <section class="ld-sec">
+      <h3>How it works</h3>
+      <p>Sign-up takes about five minutes.</p>
+      <ol class="how">
+        <li><div><b>Verify you're a student</b><span>Sign up with your school .edu email and a confirmation code.</span></div></li>
+        <li><div><b>Build your profile</b><span>Pick your free times, interests, goals and favorite places to meet.</span></div></li>
+        <li><div><b>Meet up</b><span>Wave at matches or join an event, then plan it in the chat.</span></div></li>
+      </ol>
+    </section>
+
+    <section class="ld-sec">
+      <h3>Built for safety</h3>
+      <p>Meeting new people should feel easy, not risky.</p>
+      <ul class="safe">
+        <li>🎓 Students only. Every account is verified with a school .edu email.</li>
+        <li>🔒 Your email, phone number and ZIP code are never shown to matches.</li>
+        <li>📍 Chats remind everyone to meet in public places.</li>
+        <li>🚩 Report or block anyone, any time.</li>
+      </ul>
+    </section>
+
+    <section class="ld-end">
+      <h3>Find your people on campus.</h3>
+      <div class="cta">
+        <button type="button" class="main" data-go="signup">Sign up free</button>
+        <a class="back" href="/demo.html">Try the demo 👀</a>
+      </div>
+    </section>
+
+    <footer class="ld-foot">
+      <span>&copy; 2026 MeetEm' · Built by A&#8217;Nya Hill</span>
+      <span><a href="/privacy.html">Privacy</a> · <a href="/demo.html">Demo</a></span>
+    </footer>
+  </div>
+</div>
 <div class="card">
+  <a class="tolanding" id="toLanding" role="button" tabindex="0">&larr; What is MeetEm'?</a>
   <div class="brand"><img src="/logo.svg" width="44" height="44" alt=""><h1>MeetEm<span class="ap">&#8217;</span></h1></div>
   <p class="tag">College Meet Up</p>
 
@@ -1800,8 +1936,25 @@
 
   buildChips(); buildTimes(); bindToggle();
   render("name", 0);
+
+  // Landing page buttons
+  function leaveLanding(to) {
+    document.body.classList.remove("landing");
+    if (to === "signin" && mode !== "signin") setMode("signin");
+    if (to === "signup" && mode !== "signup") setMode("signup");
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("[data-go]").forEach((b) => {
+    const goTo = () => leaveLanding(b.dataset.go);
+    b.addEventListener("click", goTo);
+    b.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo(); } });
+  });
+  const backToLanding = () => { document.body.classList.add("landing"); window.scrollTo(0, 0); };
+  $("toLanding").addEventListener("click", backToLanding);
+  $("toLanding").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); backToLanding(); } });
+  if (/start=signin/.test(location.search)) setMode("signin");
   // Keep people signed in between visits
-  db.auth.getSession().then(({ data }) => { if (data.session) afterLogin(data.session.user); });
+  db.auth.getSession().then(({ data }) => { if (data.session) { document.body.classList.remove("landing"); afterLogin(data.session.user); } });
 </script>
 </body>
 </html>
