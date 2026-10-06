@@ -13,6 +13,8 @@ MeetEm' is a web app (PWA) that matches college students by free time, interests
 - **Wave to connect**: a private chat opens only when both people wave
 - **Events & deals**: students post study groups, game nights and deals; joining opens a group chat
 - **Profiles**: photos, an optional video, music links, fun facts
+- **Meet by city**: students pick the city and state where they want to meet; matches and events filter by place
+- **Fun tab**: a weekly Talent Show (60-second videos, one vote per student), Campus Dash (a lane-runner game with a leaderboard), Hangouts voice rooms with live text, and an avatar maker
 - **Safety**: email, phone and ZIP are never shown to matches; report and block tools; meet-in-public reminders
 
 ## Tech
@@ -30,6 +32,7 @@ MeetEm' is a web app (PWA) that matches college students by free time, interests
 - `index.html`: landing page, sign-up and the full app
 - `demo.html`: clickable demo with sample students (no account, nothing saved)
 - `privacy.html`: privacy policy
+- `fun-setup.sql`: Supabase setup for avatars, the leaderboard and the Talent Show (run once in the SQL Editor)
 
 ## Author
 
